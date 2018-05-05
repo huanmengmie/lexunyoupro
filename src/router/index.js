@@ -27,14 +27,88 @@ export const constantRouterMap = [
 
   {
     path: '/',
+    name: 'Index',
+    component: () => import('@/views/frontend/index')
+  //  component: resolve => require(['@/view/frontend/index.vue'], resolve)
+  },
+  {
+    path: '/scenery',
+    name: 'Scenery',
+    component: () => import('@/views/frontend/scenery')
+  },
+  {
+    path: '/article',
+    name: 'Article',
+    component: () => import('@/views/frontend/article')
+  },
+  {
+    path: '/aboutus',
+    name: 'Aboutus',
+    component: () => import('@/views/frontend/aboutus')
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: () => import('@/views/frontend/register')
+  },
+  {
+    path: '/console',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/console/dashboard',
     name: 'Dashboard',
     hidden: true,
     children: [{
       path: 'dashboard',
       component: () => import('@/views/dashboard/index')
     }]
+  },
+  {
+    path: '/manage',
+    component: Layout,
+    redirect: '/manamge/banner',
+    name: 'Manage',
+    meta: { title: '热推管理', icon: 'recommend' },
+    children: [
+      {
+        path: 'banner',
+        name: 'ManageBanner',
+        component: () => import('@/views/backend/manage/index.vue'),
+        meta: { title: '轮播图片', icon: 'picture' }
+      },
+      {
+        path: 'scenery',
+        name: 'ManageScenery',
+        component: () => import('@/views/backend/manage/index.vue'),
+        meta: { title: '景点', icon: 'picture' }
+      },
+      {
+        path: 'article',
+        name: 'ManageArticle',
+        component: () => import('@/views/backend/manage/index.vue'),
+        meta: { title: '文章', icon: 'article' }
+      }
+    ]
+  },
+  {
+    path: '/permission',
+    component: Layout,
+    redirect: '/permission/show',
+    name: 'Permission',
+    meta: { title: '权限控制', icon: 'setup' },
+    children: [
+      {
+        path: 'show',
+        name: 'PermissionShow',
+        component: () => import('@/views/backend/manage/index.vue'),
+        meta: { title: '概览', icon: 'eye' }
+      },
+      {
+        path: 'setup',
+        name: 'PermissionSetup',
+        component: () => import('@/views/backend/manage/index.vue'),
+        meta: { title: '配置', icon: 'configuration' }
+      }
+    ]
   },
 
   {
@@ -76,7 +150,7 @@ export const constantRouterMap = [
 ]
 
 export default new Router({
-  // mode: 'history', //后端支持可开
+  mode: 'history',
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })

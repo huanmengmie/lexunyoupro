@@ -1,0 +1,120 @@
+{
+    "banners": [
+      {
+        "id": 1,
+        "url": "http://oyd1cktti.bkt.clouddn.com/9.jpg"
+      },
+      {
+        "id": 3,
+        "url": "http://oyd1cktti.bkt.clouddn.com/7.jpg"
+      },
+      {
+        "id": 4,
+        "url": "http://oyd1cktti.bkt.clouddn.com/5.jpg"
+      }
+    ],
+    "scenerys": [
+      {
+        "id": 1,
+        "name": "五台山",
+        "grade": 4.9,
+        "hotNumber": 3240,
+        "url": "http://oyd1cktti.bkt.clouddn.com/8.jpg",
+        "intro": "五台山风景秀丽特别好看字数再长一点，等下做个测试",
+        "createDate": "2017-05-23"
+      },
+      {
+        "id": 2,
+        "name": "花果山",
+        "grade": 4.2,
+        "hotNumber": 2230,
+        "url": "http://oyd1cktti.bkt.clouddn.com/8.jpg",
+        "intro": "五台山风景秀丽特别好看字数再长一点，等下做个测试",
+        "createDate": "2017-05-23"
+      },
+      {
+        "id": 3,
+        "name": "少林寺",
+        "grade": 4.8,
+        "hotNumber": 3580,
+        "url": "http://oyd1cktti.bkt.clouddn.com/8.jpg",
+        "intro": "五台山风景秀丽特别好看字数再长一点，等下做个测试",
+        "createDate": "2017-05-23"
+      },
+      {
+        "id": 4,
+        "name": "五台山",
+        "grade": 4.9,
+        "hotNumber": 3240,
+        "url": "http://oyd1cktti.bkt.clouddn.com/8.jpg",
+        "intro": "五台山风景秀丽特别好看字数再长一点，等下做个测试",
+        "createDate": "2017-05-23"
+      },
+      {
+        "id": 5,
+        "name": "花果山",
+        "grade": 4.2,
+        "hotNumber": 2230,
+        "url": "http://oyd1cktti.bkt.clouddn.com/8.jpg",
+        "intro": "五台山风景秀丽特别好看字数再长一点，等下做个测试",
+        "createDate": "2017-05-23"
+      },
+      {
+        "id": 6,
+        "name": "少林寺",
+        "grade": 4.8,
+        "hotNumber": 3580,
+        "url": "http://oyd1cktti.bkt.clouddn.com/8.jpg",
+        "intro": "五台山风景秀丽特别好看字数再长一点，等下做个测试",
+        "createDate": "2017-05-23"
+      }
+    ],
+    "article": [
+      {
+        "id": 1,
+        "value": "奇闻趣事"
+      },
+      {
+        "id": 2,
+        "value": "美妙之旅"
+      }
+    ],
+    "articleItems": [
+      {
+        "id": 1,
+        "articleTypeId": 1,
+        "author": {
+          "id": 1,
+          "userName": "hq",
+          "avatar": "http://oyd1cktti.bkt.clouddn.com/8.jpg"
+        },
+        "publishTime": "2017-05-12",
+        "articleTitle": "少林寺归来",
+        "intro": "少林寺风景秀丽特别好看字数再长一点，等下做个测试",
+        "avatar": "http://oyd1cktti.bkt.clouddn.com/8.jpg",
+        "readNumber": 30,
+        "commentNumber": 10,
+        "likeNumber": 15
+      },
+      {
+        "id": 2,
+        "articleTypeId": 2,
+        "author": {
+          "id": 1,
+          "userName": "hq",
+          "avatar": "http://oyd1cktti.bkt.clouddn.com/8.jpg"
+        },
+        "publishTime": "2017-05-12",
+        "articleTitle": "少林寺归来",
+        "intro": "少林寺风景秀丽特别好看字数再长一点，等下做个测试",
+        "avatar": "http://oyd1cktti.bkt.clouddn.com/8.jpg",
+        "readNumber": 30,
+        "commentNumber": 10,
+        "likeNumber": 15
+      }
+    ],
+    "verifyCode": {
+      "result":true,
+      "message": "验证码正确"
+    }
+  }

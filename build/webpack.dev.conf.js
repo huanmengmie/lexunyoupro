@@ -8,6 +8,7 @@ const baseWebpackConfig = require('./webpack.base.conf')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
+var express = require('express')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -58,6 +59,37 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       title: 'vue-element-admin'
     }),
   ]
+})
+
+var apiServer = express()
+var bodyParser = require('body-parser')
+apiServer.use(bodyParser.urlencoded({ extended: true }))
+apiServer.use(bodyParser.json())
+var apiRouter = express.Router()
+var fs = require('fs')
+apiRouter.route('/:apiName')
+.all(function (req, res) {
+  fs.readFile('./db.json', 'utf8', function (err, data) {
+    if (err) throw err
+    var data = JSON.parse(data)
+    if (data[req.params.apiName]) {
+      res.json(data[req.params.apiName])  
+    }
+    else {
+      res.send('no such api name')
+    }
+    
+  })
+})
+
+apiServer.use('/api', apiRouter);
+var jsonPort = PORT || config.dev.port;
+apiServer.listen(jsonPort+1, function (err) {
+  if (err) {
+    console.log(err)
+    return
+  }
+  console.log('Listening at http://localhost:'+(jsonPort+1) + '\n')
 })
 
 module.exports = new Promise((resolve, reject) => {
