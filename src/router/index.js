@@ -63,29 +63,65 @@ export const constantRouterMap = [
     }]
   },
   {
-    path: '/manage',
+    path: '/myinfo',
     component: Layout,
-    redirect: '/manamge/banner',
-    name: 'Manage',
-    meta: { title: '热推管理', icon: 'recommend' },
+    redirect: '/myinfo/show',
+    name: 'Myinfo',
+    meta: { title: '个人信息', icon: 'setup' },
     children: [
       {
-        path: 'banner',
-        name: 'ManageBanner',
+        path: 'show',
+        name: 'MyinfoShow',
         component: () => import('@/views/backend/manage/index.vue'),
-        meta: { title: '轮播图片', icon: 'picture' }
+        meta: { title: '概览', icon: 'eye' }
       },
       {
-        path: 'scenery',
-        name: 'ManageScenery',
+        path: 'update',
+        name: 'MyinfoUpdate',
         component: () => import('@/views/backend/manage/index.vue'),
-        meta: { title: '景点', icon: 'picture' }
+        meta: { title: '修改信息', icon: 'configuration' }
+      }
+    ]
+  },
+  {
+    path: '/marticle',
+    component: Layout,
+    redirect: '/marticle/show',
+    name: 'Marticle',
+    meta: { title: '我的文章', icon: 'setup' },
+    children: [
+      {
+        path: 'show',
+        name: 'MarticleShow',
+        component: () => import('@/views/backend/marticle/index.vue'),
+        meta: { title: '已发布', icon: 'eye' }
       },
       {
-        path: 'article',
-        name: 'ManageArticle',
+        path: 'add',
+        name: 'MarticleAdd',
+        component: () => import('@/views/backend/marticle/add.vue'),
+        meta: { title: '发布文章', icon: 'configuration' }
+      }
+    ]
+  },
+  {
+    path: '/mscenery',
+    component: Layout,
+    redirect: '/mscenery/show',
+    name: 'Mscenery',
+    meta: { title: '景点管理', icon: 'setup' },
+    children: [
+      {
+        path: 'show',
+        name: 'MsceneryShow',
+        component: () => import('@/views/backend/manage/scenery.vue'),
+        meta: { title: '已发布', icon: 'eye' }
+      },
+      {
+        path: 'add',
+        name: 'MsceneryAdd',
         component: () => import('@/views/backend/manage/index.vue'),
-        meta: { title: '文章', icon: 'article' }
+        meta: { title: '发布新景点', icon: 'configuration' }
       }
     ]
   },
@@ -110,41 +146,67 @@ export const constantRouterMap = [
       }
     ]
   },
-
   {
-    path: '/example',
+    path: '/manage',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
+    redirect: '/manamge/banner',
+    name: 'Manage',
+    meta: { title: '其他', icon: 'recommend' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'banner',
+        name: 'ManageBanner',
+        component: () => import('@/views/backend/manage/index.vue'),
+        meta: { title: '轮播图片', icon: 'picture' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
-
-  {
-    path: '/form',
-    component: Layout,
-    children: [
+        path: 'scenery',
+        name: 'ManageScenery',
+        component: () => import('@/views/backend/manage/scenery.vue'),
+        meta: { title: '标签管理', icon: 'picture' }
+      },
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        path: 'article',
+        name: 'ManageArticle',
+        component: () => import('@/views/backend/manage/article.vue'),
+        meta: { title: '文章筛选', icon: 'article' }
       }
     ]
   },
+  // {
+  //   path: '/example',
+  //   component: Layout,
+  //   redirect: '/example/table',
+  //   name: 'Example',
+  //   meta: { title: 'Example', icon: 'example' },
+  //   children: [
+  //     {
+  //       path: 'table',
+  //       name: 'Table',
+  //       component: () => import('@/views/table/index'),
+  //       meta: { title: 'Table', icon: 'table' }
+  //     },
+  //     {
+  //       path: 'tree',
+  //       name: 'Tree',
+  //       component: () => import('@/views/tree/index'),
+  //       meta: { title: 'Tree', icon: 'tree' }
+  //     }
+  //   ]
+  // },
+
+  // {
+  //   path: '/form',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'Form',
+  //       component: () => import('@/views/form/index'),
+  //       meta: { title: 'Form', icon: 'form' }
+  //     }
+  //   ]
+  // },
 
   { path: '*', redirect: '/404', hidden: true }
 ]
