@@ -1,6 +1,24 @@
 <template>
   <div class="createPost-container">
     <el-form class="form-container" :model="postForm" :rules="rules" ref="postForm">
+      <sticky :className="'sub-navbar '+postForm.status">
+        <template v-if="fetchSuccess">
+          <div style="background: #d0d0d0;height:40px;">
+          <div style="float:right;" class="clear">
+            <router-link style="margin-right:15px;" v-show='isEdit' :to="{ path:'create-form'}">
+              <el-button type="info">创建form</el-button>
+            </router-link>
+            <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm()">发布
+            </el-button>
+            <el-button v-loading="loading" type="warning" @click="draftForm">草稿</el-button>
+          </div>
+          </div>
+        </template>
+        <template v-else>
+          <el-tag>发送异常错误,刷新页面,或者联系程序员</el-tag>
+        </template>
+
+      </sticky>
       <div class="createPost-main-container">
         <el-row>
           <el-col :span="21">
@@ -45,9 +63,15 @@
           </MDinput>
           <span class="word-counter" v-show="contentShortLength">{{contentShortLength}}字</span>
         </el-form-item>
+
+        <el-form-item label="海报图">
+          <div style="margin-bottom: 20px;">
+            <Upload v-model="postForm.image_uri"></Upload>
+          </div>
+        </el-form-item>
         
         <div class="editor-container">
-          <tinymce :height=400 ref="editor" v-model="postForm.content"></tinymce>
+          <tinymce :height="400" ref="editor" v-model="postForm.content"></tinymce>
         </div>
       </div>
     </el-form>
@@ -57,10 +81,11 @@
 
 <script>
 import MDinput from '@/components/MDinput'
+import Sticky from '@/components/Sticky' // 粘性header组件
+import Upload from '@/components/Upload/singleImage2'
 import Tinymce from '@/components/Tinymce'
 import { validateURL } from '@/utils/validate'
 import { fetchArticle } from '@/api/article'
-import { userSearch } from '@/api/remoteSearch'
 
 const defaultForm = {
   status: 'draft',
@@ -78,7 +103,7 @@ const defaultForm = {
 
 export default {
   name: 'articleDetail',
-  components: { MDinput, Tinymce },
+  components: { MDinput, Tinymce, Sticky, Upload },
   props: {
     isEdit: {
       type: Boolean,
@@ -116,12 +141,6 @@ export default {
       postForm: Object.assign({}, defaultForm),
       fetchSuccess: true,
       loading: false,
-      userLIstOptions: [],
-      platformsOptions: [
-        { key: 'a-platform', name: 'a-platform' },
-        { key: 'b-platform', name: 'b-platform' },
-        { key: 'c-platform', name: 'c-platform' }
-      ],
       rules: {
         image_uri: [{ validator: validateRequire }],
         title: [{ validator: validateRequire }],
@@ -186,15 +205,6 @@ export default {
         duration: 1000
       })
       this.postForm.status = 'draft'
-    },
-    getRemoteUserList(query) {
-      userSearch(query).then(response => {
-        if (!response.data.items) return
-        console.log(response)
-        this.userLIstOptions = response.data.items.map(v => ({
-          key: v.name
-        }))
-      })
     }
   }
 }
@@ -222,7 +232,6 @@ export default {
         }
       }
       .editor-container {
-        min-height: 500px;
         margin: 0 0 30px;
         .editor-upload-btn-container {
             text-align: right;

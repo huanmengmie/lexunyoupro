@@ -114,7 +114,7 @@ export const constantRouterMap = [
       {
         path: 'show',
         name: 'MsceneryShow',
-        component: () => import('@/views/backend/manage/scenery.vue'),
+        component: () => import('@/views/backend/manage/tags.vue'),
         meta: { title: '已发布', icon: 'eye' }
       },
       {
@@ -162,7 +162,7 @@ export const constantRouterMap = [
       {
         path: 'scenery',
         name: 'ManageScenery',
-        component: () => import('@/views/backend/manage/scenery.vue'),
+        component: () => import('@/views/backend/manage/tags.vue'),
         meta: { title: '标签管理', icon: 'picture' }
       },
       {
