@@ -1,10 +1,9 @@
 <template>
   <div class="tab-container">
-    <el-tag>mounted times ：{{createdTimes}}</el-tag>
     <el-tabs style='margin-top:15px;' v-model="activeName" type="border-card">
       <el-tab-pane v-for="item in tabMapOptions" :label="item.label" :key='item.key' :name="item.key">
         <keep-alive>
-          <tab-pane v-if='activeName==item.key' :type='item.key' @create='showCreatedTimes'></tab-pane>
+          <tab-pane v-if='activeName==item.key' :type='item.key'></tab-pane>
         </keep-alive>
       </el-tab-pane>
     </el-tabs>
@@ -23,13 +22,7 @@ export default {
         { label: '文章类型', key: '1001' },
         { label: '景点标签', key: '1002' }
       ],
-      activeName: 'CN',
-      createdTimes: 0
-    }
-  },
-  methods: {
-    showCreatedTimes() {
-      this.createdTimes = this.createdTimes + 1
+      activeName: '1001'
     }
   }
 }

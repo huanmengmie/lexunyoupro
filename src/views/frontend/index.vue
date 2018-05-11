@@ -110,24 +110,6 @@ export default {
       isScore: true,
       nationPic: require('@/assets/img/custom.jpg'),
       banners: [],
-      // banners: [
-      //   {
-      //     id: 1,
-      //     value: 'http://oyd1cktti.bkt.clouddn.com/9.jpg'
-      //   },
-      //   {
-      //     id: 2,
-      //     value: 'http://oyd1cktti.bkt.clouddn.com/7.jpg'
-      //   },
-      //   {
-      //     id: 3,
-      //     value: 'http://oyd1cktti.bkt.clouddn.com/8.jpg'
-      //   },
-      //   {
-      //     id: 4,
-      //     value: 'http://oyd1cktti.bkt.clouddn.com/5.jpg'
-      //   }
-      // ],
       journey: [
         {
           id: 1,
@@ -258,7 +240,7 @@ export default {
   methods: {
     setBanner() {
       getBanner().then(res => {
-        this.banners = res.data
+        this.banners = res.data.data
       }).catch(err => {
         console.log(err)
       })
