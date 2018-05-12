@@ -239,8 +239,15 @@ export default {
   },
   methods: {
     setBanner() {
-      getBanner().then(res => {
-        this.banners = res.data.data
+      const queryVo = {
+        type: '1000',
+        limit: '4',
+        page: '1',
+        deleted: 'false',
+        sort: '-publish_time'
+      }
+      getBanner(queryVo).then(res => {
+        this.banners = res.data.list
       }).catch(err => {
         console.log(err)
       })

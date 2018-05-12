@@ -21,57 +21,57 @@
     </div>
 
     <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row
-      style="width: 100%">
-      <el-table-column align="center" :label="'序号'" width="65">
+      style="width: 100%" empty-text="无">
+      <el-table-column align="center" :label="'序号'" width="65" type="index">
+      </el-table-column>
+      <el-table-column width="150px" :label="'标题'">
         <template slot-scope="scope">
-          <span>{{scope.row.id}}</span>
+          <el-popover
+            placement="bottom-start"
+            width="150"
+            trigger="hover">
+            <img :src="scope.row.avatar">
+            <span class="link-type" @click="handleUpdate(scope.row)" slot="reference">{{scope.row.title}}</span>
+          </el-popover>
         </template>
       </el-table-column>
-      <el-table-column width="150px" align="center" :label="'发布日期'">
+      <el-table-column min-width="300px" align="center" :label="'简介'">
         <template slot-scope="scope">
-          <span>{{scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column min-width="150px" :label="'标题'">
-        <template slot-scope="scope">
-          <span class="link-type" @click="handleUpdate(scope.row)">{{scope.row.title}}</span>
-          <el-tag>{{scope.row.type | typeFilter}}</el-tag>
+          <el-popover
+            placement="bottom"
+            width="600"
+            trigger="hover"
+            :content="scope.row.intro">
+            <span slot="reference">{{scope.row.intro | textFilter}}</span>
+          </el-popover>
         </template>
       </el-table-column>
       <el-table-column width="110px" align="center" :label="'作者'">
         <template slot-scope="scope">
-          <span>{{scope.row.author}}</span>
+          <span>{{scope.row.customer.userName}}</span>
         </template>
       </el-table-column>
-      <el-table-column width="110px" v-if='showReviewer' align="center" :label="'审核人'">
+      <el-table-column width="110px" align="center" :label="'相关标签'">
         <template slot-scope="scope">
-          <span style='color:red;'>{{scope.row.reviewer}}</span>
+          <el-tag>{{scope.row.constant.value }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column width="80px" :label="'评分'">
+      <el-table-column width="150px" align="center" :label="'发布日期'">
         <template slot-scope="scope">
-          <svg-icon v-for="n in +scope.row.importance" icon-class="star" class="meta-item__icon" :key="n"></svg-icon>
+          <span>{{scope.row.publishTime}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="'浏览量'" width="95">
+      <el-table-column class-name="status-col" :label="'已发布'" width="100">
         <template slot-scope="scope">
-          <span v-if="scope.row.pageviews" class="link-type" @click='handleFetchPv(scope.row.pageviews)'>{{scope.row.pageviews}}</span>
-          <span v-else>0</span>
+          <el-tag :type="scope.row.deleted | statusFilter">{{!scope.row.deleted}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" :label="'状态'" width="100">
+      <el-table-column align="center" :label="'操作'" width="230" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{scope.row.status}}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" :label="'操作'" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>
-          <el-button v-if="scope.row.status!='published'" size="mini" type="success" @click="handleModifyStatus(scope.row,'published')">{{$t('table.publish')}}
+          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
+          <el-button v-if="scope.row.deleted!=true" size="mini" type="danger" @click="handleModifyStatus(scope.row,true)">草稿
           </el-button>
-          <el-button v-if="scope.row.status!='draft'" size="mini" @click="handleModifyStatus(scope.row,'draft')">{{$t('table.draft')}}
-          </el-button>
-          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(scope.row,'deleted')">{{$t('table.delete')}}
+          <el-button v-if="scope.row.deleted!=false" size="mini" type="success" @click="handleModifyStatus(scope.row,false)">发布
           </el-button>
         </template>
       </el-table-column>
@@ -197,11 +197,17 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
+        false: 'success',
+        true: 'danger'
       }
       return statusMap[status]
+    },
+    textFilter(text) {
+      if (text.length > 50) {
+        return text.substring(0, 50) + '...'
+      } else {
+        return text
+      }
     },
     typeFilter(type) {
       return calendarTypeKeyValue[type]
@@ -214,7 +220,7 @@ export default {
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
+        this.list = response.data.list
         this.total = response.data.total
         this.listLoading = false
       })
@@ -232,11 +238,13 @@ export default {
       this.getList()
     },
     handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作成功',
-        type: 'success'
+      row.deleted = status
+      updateArticle(row).then(res => {
+        this.$message({
+          message: res.message,
+          type: 'success'
+        })
       })
-      row.status = status
     },
     resetTemp() {
       this.temp = {

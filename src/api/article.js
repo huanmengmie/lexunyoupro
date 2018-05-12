@@ -1,10 +1,10 @@
 import request from '@/utils/request'
 
-export function fetchList(query) {
+export function fetchList(data) {
   return request({
-    url: '/article/list',
-    method: 'get',
-    params: query
+    url: '/article/fetch',
+    method: 'post',
+    data
   })
 }
 
@@ -25,7 +25,7 @@ export function fetchPv(pv) {
 
 export function createArticle(data) {
   return request({
-    url: '/article/create',
+    url: '/article/add',
     method: 'post',
     data
   })

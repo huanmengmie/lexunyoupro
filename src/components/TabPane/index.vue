@@ -160,7 +160,7 @@ export default {
       fetchConstant(this.listQuery).then(response => {
         // this.list = response.data.items
         this.total = response.data.total
-        this.list = response.data.data
+        this.list = response.data.list
         this.loading = false
       })
     },

@@ -94,7 +94,7 @@ export const constantRouterMap = [
         path: 'show',
         name: 'MarticleShow',
         component: () => import('@/views/backend/marticle/index.vue'),
-        meta: { title: '已发布', icon: 'eye' }
+        meta: { title: '我的文章', icon: 'eye' }
       },
       {
         path: 'add',
@@ -115,7 +115,7 @@ export const constantRouterMap = [
         path: 'show',
         name: 'MsceneryShow',
         component: () => import('@/views/backend/manage/tags.vue'),
-        meta: { title: '已发布', icon: 'eye' }
+        meta: { title: '景点概览', icon: 'eye' }
       },
       {
         path: 'add',
