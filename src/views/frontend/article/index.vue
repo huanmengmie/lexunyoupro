@@ -1,6 +1,4 @@
 <template>
-<div>
-  <my-header></my-header>
   <el-row style="margin-top:4rem;">
     <el-col :offset="3" :span="18">
         <el-input
@@ -20,13 +18,9 @@
         </div>
     </el-col>
   </el-row>
-  <my-footer></my-footer>
-</div>
 </template>
 
 <script>
-import myHeader from '@/components/common/myHeader'
-import myFooter from '@/components/common/myFooter'
 import ArticleItem from '@/components/frontend/articleItem'
 export default {
   mounted() {
@@ -34,9 +28,7 @@ export default {
     this.getArticles()
   },
   components: {
-    ArticleItem,
-    myHeader,
-    myFooter
+    ArticleItem
   },
   data() {
     return {

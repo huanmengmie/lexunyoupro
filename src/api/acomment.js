@@ -8,6 +8,13 @@ export function fetchAcomments(data) {
   })
 }
 
+export function fetchAcommentsByAid(aid) {
+  return request({
+    url: '/acomment/fetch/' + aid,
+    type: 'get'
+  })
+}
+
 export function createAcomment(data) {
   return request({
     url: '/acomment/add',
@@ -15,11 +22,11 @@ export function createAcomment(data) {
     data
   })
 }
-  
+
 export function updateAcomment(data) {
   return request({
     url: '/acomment/update',
-    method: 'post',
+    method: 'put',
     data
   })
 }

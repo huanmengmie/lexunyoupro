@@ -1,6 +1,5 @@
 <template>
   <div>
-    <my-header></my-header>
     <head-banner :bannerUrl="bannerUrl" :info="info" style="margin-top:4rem;"></head-banner>
     <el-row>
       <el-col :span="6" :offset="3" style="padding:0 10px;">
@@ -18,19 +17,14 @@
         </article>
       </el-col>
     </el-row>
-    <my-footer></my-footer>
   </div>
 </template>
 
 <script>
-import myHeader from '@/components/common/myHeader'
-import myFooter from '@/components/common/myFooter'
 import headBanner from '@/components/frontend/headBanner'
 export default {
   components: {
-    headBanner,
-    myHeader,
-    myFooter
+    headBanner
   },
   data() {
     return {

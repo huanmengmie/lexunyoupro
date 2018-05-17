@@ -1,6 +1,12 @@
 <template>
   <el-card :body-style="{ padding: '0.2rem' }">
-    <img :src="info.url" class="image">
+    <div class="image-box">
+      <img :src="info.avatar" class="image">
+      <section class="clear">
+        <address class="time">{{ info.province.basicCitysName }}-{{ info.province.basicCitysName }}</address>
+        <time class="time" style="float:right;">{{ info.publishTime }}</time>
+      </section>
+    </div>
     <div class="center">
       <span>{{ info.sceneryName }}</span>
       <span style="float:right;position:relative;">3240<i class="iconfont" style="font-size:20px;color:red;">&#xe613;</i></span>
@@ -9,7 +15,7 @@
         disabled
         show-score
         text-color="#ff9900"
-        score-template="{sceneryScore}">
+        score-template="{value}">
       </el-rate>
       <el-rate v-else
         v-model="info.grade"
@@ -19,8 +25,10 @@
       <section class="intro-section">{{ info.sceneryIntro }}</section>
     </div>
     <div class="bottom clearfix">
-      <time class="time">{{ info.publishTime }}</time>
-      <router-link :to="{ name:'sceneryDetail', params:{ id: info.id }}" class="button" tag="a">查看详情</router-link>
+      <el-tag type="primary" size="small" style="float:left">{{ info.constant.value }}</el-tag>
+      <router-link :to="{ name:'sceneryDetail', params:{ id: info.id }}">
+        <el-button type="text" class="button">查看详情</el-button>
+      </router-link>
     </div>
   </el-card>
 </template>
@@ -49,7 +57,7 @@ export default {
 
 .time {
   font-size: 0.8rem;
-  color: #c3c3c3;
+  color: white;
   float: left;
 }
 
@@ -64,8 +72,22 @@ export default {
   float: right;
 }
 
+.image-box{
+  position: relative;
+}
+
+.image-box > section {
+  position: absolute;
+  bottom: 0;
+  background: black;
+  width: 100%;
+  opacity: .5;
+  padding: 0.2rem;
+}
+
 .image {
   width: 100%;
+  height: 255px;
   display: block;
 }
 

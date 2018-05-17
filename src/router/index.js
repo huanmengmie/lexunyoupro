@@ -29,19 +29,24 @@ export const constantRouterMap = [
   {
     path: '/',
     name: 'Index',
-    component: () => import('@/views/frontend/index')
-  //  component: resolve => require(['@/view/frontend/index.vue'], resolve)
+    component: FrontLayout,
+    redirect: '/index',
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        name: 'index',
+        component: () => import('@/views/frontend/index')
+        //  component: resolve => require(['@/view/frontend/index.vue'], resolve)
+      }
+    ]
   },
-  // {
-  //   path: '/scenery',
-  //   name: 'Scenery',
-  //   component: () => import('@/views/frontend/scenery')
-  // },
   {
     path: '/scenery',
     name: 'Scenery',
     component: FrontLayout,
     redirect: '/scenery/show',
+    hidden: true,
     children: [
       {
         path: 'show',
@@ -50,33 +55,63 @@ export const constantRouterMap = [
       },
       {
         path: 'detail/:id',
-        hidden: true,
         name: 'sceneryDetail',
-        component: () => import('@/views/frontend/sceneryDetail.vue'),
-        meta: { title: '修改景点' }
+        component: () => import('@/views/frontend/sceneryDetail')
       }
     ]
   },
   {
     path: '/article',
+    component: FrontLayout,
     name: 'Article',
-    component: () => import('@/views/frontend/article')
+    redirect: '/article/show',
+    hidden: true,
+    children: [
+      {
+        name: 'ArticleShow',
+        path: 'show',
+        component: () => import('@/views/frontend/article/index')
+      },
+      {
+        path: 'detail/:id',
+        name: 'articleDetail',
+        component: () => import('@/views/frontend/article/detail')
+      }
+    ]
   },
   {
     path: '/aboutus',
     name: 'Aboutus',
-    component: () => import('@/views/frontend/aboutus')
+    component: FrontLayout,
+    redirect: '/aboutus/show',
+    hidden: true,
+    children: [
+      {
+        path: 'show',
+        name: 'AboutusShow',
+        component: () => import('@/views/frontend/aboutus')
+      }
+    ]
   },
   {
     path: '/register',
     name: 'Register',
-    component: () => import('@/views/frontend/register')
+    hidden: true,
+    component: FrontLayout,
+    redirect: '/register/show',
+    children: [
+      {
+        path: 'show',
+        name: 'RegisterShow',
+        component: () => import('@/views/frontend/register')
+      }
+    ]
   },
   {
     path: '/console',
     component: Layout,
     redirect: '/console/dashboard',
-    name: 'Dashboard',
+    name: 'console',
     hidden: true,
     children: [{
       path: 'dashboard',
@@ -208,41 +243,6 @@ export const constantRouterMap = [
       }
     ]
   },
-  // {
-  //   path: '/example',
-  //   component: Layout,
-  //   redirect: '/example/table',
-  //   name: 'Example',
-  //   meta: { title: 'Example', icon: 'example' },
-  //   children: [
-  //     {
-  //       path: 'table',
-  //       name: 'Table',
-  //       component: () => import('@/views/table/index'),
-  //       meta: { title: 'Table', icon: 'table' }
-  //     },
-  //     {
-  //       path: 'tree',
-  //       name: 'Tree',
-  //       component: () => import('@/views/tree/index'),
-  //       meta: { title: 'Tree', icon: 'tree' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/form',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'Form',
-  //       component: () => import('@/views/form/index'),
-  //       meta: { title: 'Form', icon: 'form' }
-  //     }
-  //   ]
-  // },
-
   { path: '*', redirect: '/404', hidden: true }
 ]
 

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <my-header></my-header>
     <el-carousel height="35rem" style="margin-top:4rem;">
       <el-carousel-item v-for="item in banners" :key="item.id">
         <img :src="item.value" style="width:100%;height:100%;">
@@ -66,7 +65,7 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="6" v-for="(item,key) in tests" :key="item.id" :offset="key == 0 ? 3:0" style="padding:0 30px;">
+        <el-col :span="6" v-for="(item,key) in articles" :key="item.id" :offset="key == 0 ? 3:0" style="padding:0 30px;">
           <show-card :info="item" :isScore="!isScore"></show-card>
         </el-col>
       </el-row>
@@ -84,18 +83,16 @@
         </el-col>
       </el-row>
     </div>
-    <my-footer></my-footer>
   </div>
 </template>
 
 <script>
-import myHeader from '@/components/common/myHeader'
-import myFooter from '@/components/common/myFooter'
 import ShowSceneryCard from '@/components/frontend/showSceneryCard'
 import ShowCard from '@/components/frontend/showCard'
 import ShowCardHorizontal from '@/components/frontend/showCardHorizontal'
 import { getBanner } from '@/api/frontend/index'
 import { fetchList as fetchScenerys } from '@/api/scenery'
+import { fetchList as fetchArticles } from '@/api/article'
 
 const baseQuery = {
   limit: '3',
@@ -109,13 +106,12 @@ export default {
   components: {
     ShowCard,
     ShowCardHorizontal,
-    ShowSceneryCard,
-    myHeader,
-    myFooter
+    ShowSceneryCard
   },
   mounted() {
     this.setBanner()
     this.setScenery()
+    this.setArticle()
   },
   data() {
     return {
@@ -137,6 +133,7 @@ export default {
         }
       ],
       scenerys: [],
+      articles: [],
       tests: [
         {
           id: 1,
@@ -269,8 +266,15 @@ export default {
         sort: '-si.scenery_score,-si.publish_time'
       })
       fetchScenerys(queryVo).then(res => {
-        console.log(res)
         this.scenerys = res.data.list
+      })
+    },
+    setArticle() {
+      const queryVo = Object.assign({}, baseQuery, {
+        sort: '-a.publish_time'
+      })
+      fetchArticles(queryVo).then(res => {
+        this.articles = res.data.list
       })
     }
   }

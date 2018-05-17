@@ -1,6 +1,4 @@
 <template>
-  <div>
-    <my-header></my-header>
     <el-row style="margin-top:4rem;">
         <el-col :offset="3" :span="18">
             <el-steps :active="activeIndex" simple style="margin-top:3rem;">
@@ -45,17 +43,9 @@
             </div>
         </el-col>
     </el-row>
-    <my-footer></my-footer>
-  </div>
 </template>
 <script>
-import myHeader from '@/components/common/myHeader'
-import myFooter from '@/components/common/myFooter'
 export default {
-  components: {
-    myHeader,
-    myFooter
-  },
   data() {
     var checkPhone = (rule, value, callback) => {
       var reg = /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/
