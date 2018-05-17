@@ -7,7 +7,8 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 /* Layout */
-import Layout from '../views/layout/Layout'
+import Layout from '@/views/layout/Layout'
+import FrontLayout from '@/views/frontend/FrontLayout'
 
 /**
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
@@ -31,10 +32,30 @@ export const constantRouterMap = [
     component: () => import('@/views/frontend/index')
   //  component: resolve => require(['@/view/frontend/index.vue'], resolve)
   },
+  // {
+  //   path: '/scenery',
+  //   name: 'Scenery',
+  //   component: () => import('@/views/frontend/scenery')
+  // },
   {
     path: '/scenery',
     name: 'Scenery',
-    component: () => import('@/views/frontend/scenery')
+    component: FrontLayout,
+    redirect: '/scenery/show',
+    children: [
+      {
+        path: 'show',
+        name: 'sceneryShow',
+        component: () => import('@/views/frontend/scenery')
+      },
+      {
+        path: 'detail/:id',
+        hidden: true,
+        name: 'sceneryDetail',
+        component: () => import('@/views/frontend/sceneryDetail.vue'),
+        meta: { title: '修改景点' }
+      }
+    ]
   },
   {
     path: '/article',
@@ -94,13 +115,20 @@ export const constantRouterMap = [
         path: 'show',
         name: 'MarticleShow',
         component: () => import('@/views/backend/marticle/index.vue'),
-        meta: { title: '我的文章', icon: 'eye' }
+        meta: { title: '我的随笔', icon: 'eye' }
       },
       {
         path: 'add',
         name: 'MarticleAdd',
         component: () => import('@/views/backend/marticle/add.vue'),
         meta: { title: '发布文章', icon: 'configuration' }
+      },
+      {
+        path: 'edit/:id',
+        hidden: true,
+        name: 'MarticleEdit',
+        component: () => import('@/views/backend/marticle/edit.vue'),
+        meta: { title: '修改文章' }
       }
     ]
   },
@@ -114,14 +142,21 @@ export const constantRouterMap = [
       {
         path: 'show',
         name: 'MsceneryShow',
-        component: () => import('@/views/backend/manage/tags.vue'),
+        component: () => import('@/views/backend/mscenery/index.vue'),
         meta: { title: '景点概览', icon: 'eye' }
       },
       {
         path: 'add',
         name: 'MsceneryAdd',
-        component: () => import('@/views/backend/manage/index.vue'),
+        component: () => import('@/views/backend/mscenery/add.vue'),
         meta: { title: '发布新景点', icon: 'configuration' }
+      },
+      {
+        path: 'edit/:id',
+        hidden: true,
+        name: 'MsceneryEdit',
+        component: () => import('@/views/backend/mscenery/edit.vue'),
+        meta: { title: '修改景点' }
       }
     ]
   },

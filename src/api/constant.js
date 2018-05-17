@@ -19,7 +19,7 @@ export function addConstant(data) {
 export function updateConstant(data) {
   return request({
     url: '/constant/update',
-    method: 'post',
+    method: 'put',
     data
   })
 }

@@ -16,7 +16,7 @@
       v-on:dropzone-success="dropzoneS"
       v-on:dropzone-fileAdded="add"
       id="myVueDropzone"
-      url="https://httpbin.org/post"
+      :url="uploadUrl"
       ref="myVueDropzone"
       ></dropzone>
     </div>
@@ -31,12 +31,12 @@ export default {
   data() {
     return {
       bannerMap: new Map(),
-      banners: []
+      banners: [],
+      uploadUrl: this.$store.state.constant.qiniu
     }
   },
   methods: {
     dropzoneS(file) {
-      console.log(file)
       this.$message({ message: 'Upload success', type: 'success' })
     },
     remove(file) {
@@ -46,9 +46,7 @@ export default {
     },
     add(file) {
       this.bannerMap.set(file.name, window.URL.createObjectURL(file))
-      console.log(window.URL.createObjectURL(file))
       this.banners = [...this.bannerMap.values()]
-      console.log([...this.bannerMap.values()])
     },
     uploadFiles() {
       this.$refs.myVueDropzone.processQueue()

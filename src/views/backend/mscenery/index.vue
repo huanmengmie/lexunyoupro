@@ -19,8 +19,8 @@
       </el-select>
       
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-      <router-link style="margin-right:15px;" :to="{ path:'/marticle/add'}">
-        <el-button type="info" icon="el-icon-edit">发布新文章</el-button>
+      <router-link style="margin-right:15px;" :to="{ path:'/mscenery/add'}">
+        <el-button type="info" icon="el-icon-edit">发布新景点</el-button>
       </router-link>
     </div>
 
@@ -28,14 +28,14 @@
       style="width: 100%" empty-text="无">
       <el-table-column align="center" :label="'序号'" width="65" type="index">
       </el-table-column>
-      <el-table-column width="150px" :label="'标题'">
+      <el-table-column width="150px" :label="'景点名称'">
         <template slot-scope="scope">
           <el-popover
             placement="bottom-start"
             width="150"
             trigger="hover">
             <img :src="scope.row.avatar">
-            <span class="link-type" @click="handleUpdate(scope.row)" slot="reference">{{scope.row.title}}</span>
+            <span class="link-type" @click="handleUpdate(scope.row)" slot="reference">{{scope.row.sceneryName}}</span>
           </el-popover>
         </template>
       </el-table-column>
@@ -45,8 +45,8 @@
             placement="bottom"
             width="600"
             trigger="hover"
-            :content="scope.row.intro">
-            <span slot="reference">{{scope.row.intro | textFilter}}</span>
+            :content="scope.row.sceneryIntro">
+            <span slot="reference">{{scope.row.sceneryIntro | textFilter}}</span>
           </el-popover>
         </template>
       </el-table-column>
@@ -60,12 +60,27 @@
           <el-tag>{{scope.row.constant.value }}</el-tag>
         </template>
       </el-table-column>
+      <el-table-column width="160px" align="center" :label="'省份'">
+        <template slot-scope="scope">
+          <span>{{scope.row.province.basicCitysName}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="160px" align="center" :label="'城市'">
+        <template slot-scope="scope">
+          <span>{{scope.row.city.basicCitysName}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="160px" align="center" :label="'详细地址'">
+        <template slot-scope="scope">
+          <span>{{scope.row.address}}</span>
+        </template>
+      </el-table-column>
       <el-table-column width="160px" align="center" :label="'发布日期'">
         <template slot-scope="scope">
           <span>{{scope.row.publishTime}}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" :label="'已发布'" width="100">
+      <el-table-column class-name="status-col" :label="'已发布'" width="80">
         <template slot-scope="scope">
           <el-tag :type="scope.row.deleted | statusFilter">{{!scope.row.deleted}}</el-tag>
         </template>
@@ -89,7 +104,7 @@
 </template>
 
 <script>
-import { fetchList, updateArticle } from '@/api/article'
+import { fetchList, updateScenery } from '@/api/scenery'
 import { fetchConstant } from '@/api/constant'
 import { parseTime, textSubString } from '@/utils'
 
@@ -159,7 +174,7 @@ export default {
       const conditions = {
         simple: true,
         deleted: false,
-        type: '1001'
+        type: '1002'
       }
       fetchConstant(conditions).then(res => {
         this.tagArray = res.data.list
@@ -179,7 +194,7 @@ export default {
     },
     handleModifyStatus(row, status) {
       row.deleted = status
-      updateArticle(row).then(res => {
+      updateScenery(row).then(res => {
         this.$message({
           message: res.message,
           type: 'success'
@@ -187,7 +202,7 @@ export default {
       })
     },
     handleUpdate(id) {
-      this.$router.push({ name: 'MarticleEdit', params: { id: id }})
+      this.$router.push({ name: 'MsceneryEdit', params: { id: id }})
     }
   }
 }

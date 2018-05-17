@@ -114,7 +114,8 @@ export default {
         page: 1,
         limit: 10,
         type: this.type,
-        sort: '+id'
+        sort: '+id',
+        simple: false
       },
       loading: false,
       textMap: {
@@ -132,8 +133,8 @@ export default {
         deleted: false
       },
       rules: {
-        type: [{ required: true, message: '请选择文章类型', trigger: 'change' }],
-        publishTime: [{ type: 'date', required: true, message: '请选择时间', trigger: 'change' }],
+        type: [{ required: true, message: '请选择文章类型', trigger: 'blur' }],
+        publishTime: [{ type: 'date', required: true, message: '请选择时间', trigger: 'blur' }],
         value: [{ required: true, message: '请输入value值', trigger: 'blur' }]
       }
     }

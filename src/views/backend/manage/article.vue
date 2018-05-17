@@ -162,7 +162,8 @@ export default {
         importance: undefined,
         title: undefined,
         type: undefined,
-        sort: '+id'
+        sort: '+id',
+        simple: false
       },
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,

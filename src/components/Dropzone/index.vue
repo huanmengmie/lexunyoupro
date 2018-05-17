@@ -7,7 +7,8 @@
 <script>
 import Dropzone from 'dropzone'
 import 'dropzone/dist/dropzone.css'
-// import { getToken } from 'api/qiniu';
+import { addConstant } from '@/api/constant'
+import { parseTime } from '@/utils'
 
 Dropzone.autoDiscover = false
 
@@ -58,19 +59,9 @@ export default {
         }
       },
       accept: (file, done) => {
-        /* 七牛*/
-        // const token = this.$store.getters.token;
-        // getToken(token).then(response => {
-        //   file.token = response.data.qiniu_token;
-        //   file.key = response.data.qiniu_key;
-        //   file.url = response.data.qiniu_url;
-        //   done();
-        // })
         done()
       },
       sending: (file, xhr, formData) => {
-        // formData.append('token', file.token);
-        // formData.append('key', file.key);
         vm.initOnce = false
       }
     })
@@ -79,8 +70,16 @@ export default {
       document.addEventListener('paste', this.pasteImg)
     }
 
-    this.dropzone.on('success', file => {
-      vm.$emit('dropzone-success', file, vm.dropzone.element)
+    this.dropzone.on('success', (file, res) => {
+      const banner = {
+        type: '1000',
+        key: 'banner' + parseTime(new Date()),
+        value: res.picUrl,
+        publishTime: parseTime(new Date())
+      }
+      addConstant(banner).then(res => {
+        vm.$emit('dropzone-success', file, vm.dropzone.element)
+      })
     })
     this.dropzone.on('addedfile', file => {
       vm.$emit('dropzone-fileAdded', file)
@@ -92,6 +91,7 @@ export default {
       vm.$emit('dropzone-error', file, error, xhr)
     })
     this.dropzone.on('successmultiple', (file, error, xhr) => {
+      console.log(1)
       vm.$emit('dropzone-successmultiple', file, error, xhr)
     })
   },

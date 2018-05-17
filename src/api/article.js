@@ -8,10 +8,11 @@ export function fetchList(data) {
   })
 }
 
-export function fetchArticle() {
+export function fetchArticle(id) {
   return request({
     url: '/article/detail',
-    method: 'get'
+    method: 'get',
+    params: { id }
   })
 }
 
@@ -34,7 +35,7 @@ export function createArticle(data) {
 export function updateArticle(data) {
   return request({
     url: '/article/update',
-    method: 'post',
+    method: 'put',
     data
   })
 }

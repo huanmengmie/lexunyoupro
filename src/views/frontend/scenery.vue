@@ -1,6 +1,5 @@
 <template>
 <div>
-  <my-header></my-header>
   <el-row style="margin-top:4rem;">
       <el-col :offset="3" :span="18" >
           <el-input
@@ -37,21 +36,16 @@
         </el-col>
       </el-row>
   </div>
-  <my-footer></my-footer>
 </div>
 </template>
 
 <script>
-import myHeader from '@/components/common/myHeader'
-import myFooter from '@/components/common/myFooter'
 import showCard from '@/components/frontend/showCard'
 import filterList from '@/components/frontend/filterList'
 export default {
   components: {
     showCard,
-    filterList,
-    myHeader,
-    myFooter
+    filterList
   },
   mounted() {
     this.getScenerys()

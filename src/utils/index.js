@@ -56,3 +56,11 @@ export function formatTime(time, option) {
     return d.getMonth() + 1 + '月' + d.getDate() + '日' + d.getHours() + '时' + d.getMinutes() + '分'
   }
 }
+
+export function textSubString(text, length) {
+  if (text.length > length) {
+    return text.substring(0, length) + '...'
+  } else {
+    return text
+  }
+}

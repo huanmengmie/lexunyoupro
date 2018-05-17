@@ -54,7 +54,7 @@
       </el-row>
       <el-row>
         <el-col :span="6" v-for="(item,key) in scenerys" :key="item.id" :offset="key == 0 ? 3:0" style="padding:0 30px;">
-          <show-card :info="item" :isScore="isScore"></show-card>
+          <show-scenery-card :info="item" :isScore="isScore"></show-scenery-card>
         </el-col>
       </el-row>
     </div>
@@ -66,7 +66,7 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="6" v-for="(item,key) in scenerys" :key="item.id" :offset="key == 0 ? 3:0" style="padding:0 30px;">
+        <el-col :span="6" v-for="(item,key) in tests" :key="item.id" :offset="key == 0 ? 3:0" style="padding:0 30px;">
           <show-card :info="item" :isScore="!isScore"></show-card>
         </el-col>
       </el-row>
@@ -91,19 +91,31 @@
 <script>
 import myHeader from '@/components/common/myHeader'
 import myFooter from '@/components/common/myFooter'
+import ShowSceneryCard from '@/components/frontend/showSceneryCard'
 import ShowCard from '@/components/frontend/showCard'
 import ShowCardHorizontal from '@/components/frontend/showCardHorizontal'
 import { getBanner } from '@/api/frontend/index'
+import { fetchList as fetchScenerys } from '@/api/scenery'
+
+const baseQuery = {
+  limit: '3',
+  page: '1',
+  deleted: false,
+  simple: false
+}
+
 export default {
   name: 'index',
   components: {
     ShowCard,
     ShowCardHorizontal,
+    ShowSceneryCard,
     myHeader,
     myFooter
   },
-  created() {
+  mounted() {
     this.setBanner()
+    this.setScenery()
   },
   data() {
     return {
@@ -124,7 +136,8 @@ export default {
           url: require('@/assets/img/about3.png')
         }
       ],
-      scenerys: [
+      scenerys: [],
+      tests: [
         {
           id: 1,
           name: '五台山',
@@ -239,17 +252,25 @@ export default {
   },
   methods: {
     setBanner() {
-      const queryVo = {
+      const queryVo = Object.assign({}, baseQuery, {
         type: '1000',
         limit: '4',
-        page: '1',
-        deleted: 'false',
+        simple: true,
         sort: '-publish_time'
-      }
+      })
       getBanner(queryVo).then(res => {
         this.banners = res.data.list
       }).catch(err => {
         console.log(err)
+      })
+    },
+    setScenery() {
+      const queryVo = Object.assign({}, baseQuery, {
+        sort: '-si.scenery_score,-si.publish_time'
+      })
+      fetchScenerys(queryVo).then(res => {
+        console.log(res)
+        this.scenerys = res.data.list
       })
     }
   }

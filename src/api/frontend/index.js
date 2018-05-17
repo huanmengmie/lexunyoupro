@@ -1,8 +1,9 @@
 import request from '@/utils/request'
 
-export function getBanner() {
+export function getBanner(data) {
   return request({
     url: '/index/banner',
-    method: 'get'
+    method: 'post',
+    data
   })
 }
