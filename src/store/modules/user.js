@@ -5,7 +5,7 @@ const user = {
   state: {
     id: '1',
     token: getToken(),
-    name: 'admin',
+    name: 'hq',
     avatar: '',
     roles: []
   },

@@ -15,18 +15,18 @@
             active-text-color="#fff"
             :router="useRouter"
             style="border-bottom:0">
-            <el-menu-item index="/">首页</el-menu-item>
-            <el-menu-item index="/scenery">热门景点</el-menu-item>
-            <el-menu-item index="/article">交流心得</el-menu-item>
-            <el-menu-item index="/console">控制台</el-menu-item>
-            <el-menu-item index="/register" v-if="!isLogin" @dblclick="isLogin = !isLogin">
-                <span @click="openDialog('login')">登录/</span>
-                <router-link :to="{path:'/register'}" tag="span">注册</router-link>
-            </el-menu-item>
-            <el-menu-item index="" v-else @click="isLogin = !isLogin">个人信息</el-menu-item>
-            <!-- <el-menu-item index="" v-if="isLogin" @dblclick="isLogin = !isLogin"><span @click="openDialog('login')">登录</span>/<span @click="openDialog('register')">注册</span></el-menu-item>
-            <el-menu-item index="" v-else @click="isLogin = !isLogin">个人信息</el-menu-item> -->
-            <el-menu-item index="/aboutus" @click="activeIndex='/aboutus'">关于</el-menu-item>
+              <el-menu-item index="/">首页</el-menu-item>
+              <el-menu-item index="/scenery">热门景点</el-menu-item>
+              <el-menu-item index="/article">交流心得</el-menu-item>
+              <el-menu-item index="/console">控制台</el-menu-item>
+              <el-menu-item index="/register" v-if="!isLogin" @dblclick="isLogin = !isLogin">
+                  <span @click="openDialog('login')">登录/</span>
+                  <router-link :to="{path:'/register'}" tag="span">注册</router-link>
+              </el-menu-item>
+              <el-menu-item index="" v-else @click="isLogin = !isLogin">个人信息</el-menu-item>
+              <!-- <el-menu-item index="" v-if="isLogin" @dblclick="isLogin = !isLogin"><span @click="openDialog('login')">登录</span>/<span @click="openDialog('register')">注册</span></el-menu-item>
+              <el-menu-item index="" v-else @click="isLogin = !isLogin">个人信息</el-menu-item> -->
+              <el-menu-item index="/aboutus" @click="activeIndex='/aboutus'">关于</el-menu-item>
             </el-menu>
         </el-col>
     </el-row>

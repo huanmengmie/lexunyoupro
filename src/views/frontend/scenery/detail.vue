@@ -2,7 +2,7 @@
     <el-row style="margin-top:4.2rem;">
         <el-col :offset="3" :span="14">
             <div class="baseinfo">
-                <h1>{{ info.title }}</h1>
+                <h1>{{ info.sceneryName }}</h1>
                 <el-row>
                     <el-col :span="8" :offset="4">
                         <span>作者: {{ info.customer && info.customer.userName }}</span>
@@ -13,7 +13,7 @@
                     <el-col :span="5" :offset="3" class="clear">
                         <span style="float:left;">评分: </span>
                         <el-rate
-                            v-model="info.score"
+                            v-model="info.sceneryScore"
                             disabled
                             show-score
                             disabled-void-color	="#FFF"
@@ -25,17 +25,14 @@
                         <span>发布时间: {{ info.publishTime }}</span>
                     </el-col>
                     <el-col :span="10">
-                        推荐景点: 
-                        <router-link :to="{ name:'sceneryDetail',params:{id:info.sceneryInfo && info.sceneryInfo.id} }">
-                            <span style="color: #409EFF;">{{ info.sceneryInfo && info.sceneryInfo.sceneryName }}</span>
-                        </router-link>
+                        位置:{{ info.province && info.province.basicCitysName }}-{{info.city && info.city.basicCitysName }}-{{ info.address }}
                     </el-col>
                 </el-row>
             </div>
             <div>
                 <p class="flag">摘要</p>
                 <blockquote class="context intro">
-                    {{info.intro}}
+                    {{info.sceneryIntro}}
                 </blockquote>
             </div>
             <div>
@@ -56,7 +53,7 @@
             <div>
                 <p class="flag">发表评论</p>
                 <el-rate
-                  v-model="newComment.articleScore"
+                  v-model="newComment.sceneryScore"
                   show-text
                   :colors="['#99A9BF', '#F7BA2A', '#FF9900']">
                 </el-rate>
@@ -81,8 +78,8 @@
 <script>
 import chatContent from './component/chatContent'
 import recommendList from '@/components/frontend/recommendList'
-import { fetchArticle } from '@/api/article'
-import { fetchAcommentsByAid, createAcomment } from '@/api/acomment'
+import { fetchScenery } from '@/api/scenery'
+import { fetchScommentsByAid, createScomment } from '@/api/scomment'
 
 export default {
   components: {
@@ -97,11 +94,11 @@ export default {
       originalData: [], // 原始评论数据
       comments: [], // 处理后的评论数据
       newComment: {
-        articleId: this.$route.params.id,
+        sceneryId: this.$route.params.id,
         customerId: this.$store.state.user.id,
         replyId: 0,
         content: '',
-        articleScore: 5
+        sceneryScore: 5
       }
     }
   },
@@ -120,12 +117,12 @@ export default {
   },
   methods: {
     fetchData() {
-      fetchArticle(this.$route.params.id).then(res => {
+      fetchScenery(this.$route.params.id).then(res => {
         this.info = res.data
       })
     },
     fetchComments() {
-      fetchAcommentsByAid(this.$route.params.id).then(res => {
+      fetchScommentsByAid(this.$route.params.id).then(res => {
         this.originalData = res.data
         this.handleComments(res.data)
       })
@@ -154,7 +151,7 @@ export default {
       this.handleReply(item[0])
     },
     submitComment() {
-      createAcomment(this.newComment).then(res => {
+      createScomment(this.newComment).then(res => {
         this.$message({
           type: 'success',
           message: res.message
@@ -171,11 +168,11 @@ export default {
     },
     restComment() {
       this.newComment = {
-        articleId: this.$route.params.id,
+        sceneryId: this.$route.params.id,
         customerId: this.$store.state.user.id,
         replyId: 0,
         content: '',
-        articleScore: 5
+        sceneryScore: 5
       }
       this.tips = '说说你的看法'
     }

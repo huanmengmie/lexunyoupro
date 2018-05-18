@@ -8,6 +8,13 @@ export function fetchScomments(data) {
   })
 }
 
+export function fetchScommentsByAid(aid) {
+  return request({
+    url: '/scomment/fetch/' + aid,
+    type: 'get'
+  })
+}
+
 export function createScomment(data) {
   return request({
     url: '/scomment/add',
@@ -15,7 +22,7 @@ export function createScomment(data) {
     data
   })
 }
-  
+
 export function updateScomment(data) {
   return request({
     url: '/scomment/update',

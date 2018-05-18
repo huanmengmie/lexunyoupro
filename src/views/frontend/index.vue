@@ -134,35 +134,6 @@ export default {
       ],
       scenerys: [],
       articles: [],
-      tests: [
-        {
-          id: 1,
-          name: '五台山',
-          grade: 4.9,
-          url: 'http://oyd1cktti.bkt.clouddn.com/8.jpg',
-          hotNumber: 3240,
-          intro: '五台山风景秀丽特别好看字数再长一点，等下做个测试',
-          createTime: '2017-05-23'
-        },
-        {
-          id: 2,
-          name: '花果山',
-          grade: 4.2,
-          url: 'http://oyd1cktti.bkt.clouddn.com/8.jpg',
-          hotNumber: 2230,
-          intro: '五台山风景秀丽特别好看字数再长一点，等下做个测试',
-          createTime: '2017-05-23'
-        },
-        {
-          id: 3,
-          name: '少林寺',
-          grade: 4.8,
-          url: 'http://oyd1cktti.bkt.clouddn.com/8.jpg',
-          hotNumber: 3580,
-          intro: '五台山风景秀丽特别好看字数再长一点，等下做个测试',
-          createTime: '2017-05-23'
-        }
-      ],
       comment: [
         {
           id: 1,

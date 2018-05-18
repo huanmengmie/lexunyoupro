@@ -4,9 +4,6 @@
       <span>{{ info }}:</span>
     </el-col>
     <el-col :span="22" style="text-align:left">
-      <!-- <el-checkbox-group v-model="condition" max=1>
-        <el-checkbox-button v-for="item in detail" :label="item.id" :key="item.id"  @change="addCondition">{{item.value}}</el-checkbox-button>
-      </el-checkbox-group> -->
       <el-radio v-model="condition" v-for="item in detail" :label="item.id" :key="item.id" border  @change="addCondition(item)">{{item.value}}</el-radio>
     </el-col>
   </el-row>

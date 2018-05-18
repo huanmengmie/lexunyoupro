@@ -10,9 +10,8 @@ export function fetchList(data) {
 
 export function fetchScenery(id) {
   return request({
-    url: '/sceneryInfo/detail',
-    method: 'get',
-    params: { id }
+    url: '/sceneryInfo/detail/' + id,
+    method: 'get'
   })
 }
 

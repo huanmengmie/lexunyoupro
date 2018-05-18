@@ -67,6 +67,6 @@ export default {
 }
 .article-tags {
     border: 1px solid #e8e8e8;
-    padding: 1rem .5rem 0rem;
+    padding: 1rem 2rem 0rem;
 }
 </style>

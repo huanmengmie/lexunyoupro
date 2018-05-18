@@ -8,15 +8,18 @@
               prefix-icon="el-icon-search"
               v-model="searchConditions">
           </el-input>
-          <div class="filters">
-              <div v-for="(item,key) in conditions" :key="key">
+          <div class="clear scenery-tags">
+              <!-- <div v-for="(item,key) in conditions" :key="key">
                   <filter-list :info="item.info" :detail="item.value" @chooseCondition="handleCondition"></filter-list>
-              </div>
+              </div> -->
+              <el-checkbox-group v-model="hasChoosed" @change="test">
+                <el-checkbox v-for="item in tagArray" :label="item.id" :key="item.id" border style="margin-bottom:1rem;">{{item.value}}</el-checkbox>
+              </el-checkbox-group>
           </div>
           <div>
             <el-menu :default-active="'all'" class="el-menu-demo" mode="horizontal" @select="scenerySort">
               <el-menu-item index="all">综合</el-menu-item>
-              <el-menu-item index="hot">人气排序</el-menu-item>
+              <el-menu-item index="time">发布时间</el-menu-item>
               <el-menu-item index="score">网友评分</el-menu-item>
               <el-cascader
                 placeholder="请输入地址"
@@ -32,7 +35,7 @@
   <div style="padding-bottom:5rem;">
       <el-row>
         <el-col :span="6" v-for="(item,key) in scenerys" :key="item.id" :offset="key%3 == 0 ?3:0" style="padding:0 30px;">
-          <show-card :info="item" :isScore="false" style="margin:1rem 0"></show-card>
+          <show-scenery-card :info="item" :isScore="true" style="margin:1rem 0"></show-scenery-card>
         </el-col>
       </el-row>
   </div>
@@ -40,21 +43,33 @@
 </template>
 
 <script>
-import showCard from '@/components/frontend/showCard'
+import ShowSceneryCard from '@/components/frontend/showSceneryCard'
 import filterList from '@/components/frontend/filterList'
+import { fetchConstant } from '@/api/constant'
+import { fetchList } from '@/api/scenery'
+
 export default {
   components: {
-    showCard,
+    ShowSceneryCard,
     filterList
   },
   mounted() {
     this.getScenerys()
+    this.getTags()
   },
   data() {
     return {
       searchConditions: '',
       scenerys: [],
-      hasChoosed: new Map(),
+      tagArray: [],
+      hasChoosed: [],
+      listQuery: {
+        page: 1,
+        limit: 10,
+        simple: false,
+        constantId: undefined,
+        sort: '-si.scenery_score,-si.publish_time'
+      },
       scenerySearch: [],
       conditions: [
         {
@@ -103,19 +118,38 @@ export default {
     }
   },
   methods: {
-    handleCondition(item) {
-      this.hasChoosed.set(item.type, item.id)
-      console.log(this.hasChoosed, item)
+    getTags() {
+      const conditions = {
+        simple: true,
+        deleted: false,
+        type: '1002'
+      }
+      fetchConstant(conditions).then(res => {
+        this.tagArray = res.data.list
+      })
     },
-    scenerySort(key, keyPath) {
-      console.log('key:' + key + 'keyPath:' + keyPath)
+    scenerySort(key) {
+      if (key === 'all') {
+        this.listQuery.sort = '-si.scenery_score,-si.publish_time'
+      } else if (key === 'time') {
+        this.listQuery.sort = '-si.publish_time'
+      } else if (key === 'score') {
+        this.listQuery.sort = '-si.scenery_score'
+      }
+      this.getScenerys()
     },
     getScenerys() {
-      this.$http.get('/api/scenerys')
-        .then((res) => {
-          this.scenerys = res.data
-          console.log(res, res.data)
-        })
+      fetchList(this.listQuery).then(res => {
+        this.scenerys = res.data.list
+      })
+    },
+    test() {
+      if (this.hasChoosed.length > 1) {
+        this.hasChoosed.shift()
+      }
+      this.listQuery.constantId = this.hasChoosed[0]
+      this.getScenerys()
+      console.log(1)
     }
   }
 }
@@ -123,12 +157,12 @@ export default {
 
 <style scoped>
 .el-input {
-    width: 40%;
-    margin: 1rem 5rem 1rem 50%;
+  width: 40%;
+  margin: 1rem 5rem 1rem 50%;
 }
-.filters {
-  margin-bottom: 5px;
+.scenery-tags {
   border: 1px solid #e8e8e8;
-  border-bottom: none;
+  padding: 1rem 2rem 0rem;
+  text-align: left;
 }
 </style>

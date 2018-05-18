@@ -151,7 +151,7 @@ export default {
       return this.tagArray[type]
     }
   },
-  created() {
+  mounted() {
     this.getList()
     this.getTags()
   },

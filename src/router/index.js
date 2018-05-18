@@ -51,12 +51,12 @@ export const constantRouterMap = [
       {
         path: 'show',
         name: 'sceneryShow',
-        component: () => import('@/views/frontend/scenery')
+        component: () => import('@/views/frontend/scenery/index')
       },
       {
         path: 'detail/:id',
         name: 'sceneryDetail',
-        component: () => import('@/views/frontend/sceneryDetail')
+        component: () => import('@/views/frontend/scenery/detail')
       }
     ]
   },
