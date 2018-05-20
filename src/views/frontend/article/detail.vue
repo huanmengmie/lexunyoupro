@@ -66,6 +66,7 @@
                 type="textarea"
                 :rows="2"
                 :placeholder="tips"
+                @keyup.esc.native="restComment"
                 @blur="handleBlur"
                 v-model="newComment.content">
                 </el-input>

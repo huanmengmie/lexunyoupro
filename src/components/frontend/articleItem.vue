@@ -2,18 +2,19 @@
   <el-row>
     <el-col :span="20">
       <div class="article-item-author">
-        <img :src="articleInfo.author.avatar">
-        <span>{{ articleInfo.author.userName}}</span>
+        <img :src="articleInfo.customer && articleInfo.customer.avatar">
+        <span>{{ articleInfo.customer && articleInfo.customer.userName}}</span>
         <span style="padding:0 1rem;">{{ articleInfo.publishTime}}</span>
+        <el-tag type="primary" size="small">{{ articleInfo.constant && articleInfo.constant.value }}</el-tag>
       </div>
       <article class="article-content">
-        <a class="article-title" href="javascript:void(0)">{{ articleInfo.articleTitle}}</a>
-        <section>{{ articleInfo.intro }}</section>
+        <router-link :to="{ name: 'articleDetail', params:{id:articleInfo.id}}" tag="p" class="article-title">{{ articleInfo.title}}</router-link>
+        <section>{{ text }}</section>
       </article>
       <ul class="article-num clear">
-        <li><i class="el-icon-view"></i><span>{{ articleInfo.readNumber }}</span></li>
-        <li><i class="iconfont">&#xe600;</i><span>{{ articleInfo.commentNumber }}</span></li>
-        <li><i class="iconfont">&#xe613;</i><span>{{ articleInfo.likeNumber }}</span></li>
+        <li><svg-icon icon-class="star"></svg-icon><span>{{ articleInfo.score }}</span></li>
+        <li><i class="iconfont">&#xe600;</i><span>15</span></li>
+        <li><i class="iconfont">&#xe613;</i><span>30</span></li>
       </ul>
     </el-col>
     <el-col :span="4">
@@ -23,8 +24,14 @@
 </template>
 
 <script>
+import { textSubString } from '@/utils'
 export default {
-  props: ['articleInfo']
+  props: ['articleInfo'],
+  computed: {
+    text() {
+      return textSubString(this.articleInfo.intro, 120)
+    }
+  }
 }
 </script>
 
@@ -47,17 +54,15 @@ export default {
   position: relative;
   top: .5rem;
 }
+
+
 .article-title {
-  text-decoration: none;
-  color: #333;
-  display: inherit;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.5;
+  text-align: center;
+  text-decoration: underline;
+  padding-bottom: 3px;
+  cursor: pointer;
 }
-.article-title:hover {
-  text-decoration-line: underline;
-}
+
 .article-content{
   padding: 0 1rem .5rem 0;
 }
@@ -67,6 +72,7 @@ export default {
 .article-num {
   position: absolute;
   bottom: 1rem;
+  right: 20rem;
   list-style: none;
 }
 .article-num li{
@@ -75,6 +81,6 @@ export default {
 }
 .article-avatar {
   width:100%;
-  height:100%;
+  height:130px;
 }
 </style>

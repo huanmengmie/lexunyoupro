@@ -93,6 +93,7 @@ import ShowCardHorizontal from '@/components/frontend/showCardHorizontal'
 import { getBanner } from '@/api/frontend/index'
 import { fetchList as fetchScenerys } from '@/api/scenery'
 import { fetchList as fetchArticles } from '@/api/article'
+import { fetchScomments } from '@/api/scomment'
 
 const baseQuery = {
   limit: '3',
@@ -112,6 +113,7 @@ export default {
     this.setBanner()
     this.setScenery()
     this.setArticle()
+    this.setComments()
   },
   data() {
     return {
@@ -134,88 +136,7 @@ export default {
       ],
       scenerys: [],
       articles: [],
-      comment: [
-        {
-          id: 1,
-          name: '张小姐',
-          grade: 4.9,
-          url: 'http://oyd1cktti.bkt.clouddn.com/8.jpg',
-          content: '五台山风景秀丽特别好看字数再长一点，等下做个测试',
-          createTime: '2017-05-23'
-        },
-        {
-          id: 2,
-          name: '李小姐',
-          grade: 4.2,
-          url: 'http://oyd1cktti.bkt.clouddn.com/8.jpg',
-          content: '五台山风景秀丽特别好看字数再长一点，等下做个测试',
-          createTime: '2017-05-23'
-        },
-        {
-          id: 3,
-          name: '隔壁老王',
-          grade: 4.8,
-          url: 'http://oyd1cktti.bkt.clouddn.com/8.jpg',
-          content: '五台山风景秀丽特别好看字数再长一点，等下做个测试',
-          createTime: '2017-05-23'
-        },
-        {
-          id: 4,
-          name: '对面小赵',
-          grade: 4.9,
-          url: 'http://oyd1cktti.bkt.clouddn.com/8.jpg',
-          content: '五台山风景秀丽特别好看字数再长一点，等下做个测试',
-          createTime: '2017-05-23'
-        },
-        {
-          id: 5,
-          name: '老张',
-          grade: 4.2,
-          url: 'http://oyd1cktti.bkt.clouddn.com/8.jpg',
-          content: '五台山风景秀丽特别好看字数再长一点，等下做个测试',
-          createTime: '2017-05-23'
-        },
-        {
-          id: 6,
-          name: '驴友',
-          grade: 4.8,
-          url: 'http://oyd1cktti.bkt.clouddn.com/8.jpg',
-          content: '五台山风景秀丽特别好看字数再长一点，等下做个测试五台山风景秀丽特别好看字数再长一点，等下做个测试五台山风景秀丽特别好看字数再长一点，等下做个测试',
-          createTime: '2017-05-23'
-        },
-        {
-          id: 7,
-          name: '张小姐',
-          grade: 4.9,
-          url: 'http://oyd1cktti.bkt.clouddn.com/8.jpg',
-          content: '五台山风景秀丽特别好看字数再长一点，等下做个测试',
-          createTime: '2017-05-23'
-        },
-        {
-          id: 8,
-          name: '李小姐',
-          grade: 4.2,
-          url: 'http://oyd1cktti.bkt.clouddn.com/8.jpg',
-          content: '五台山风景秀丽特别好看字数再长一点，等下做个测试',
-          createTime: '2017-05-23'
-        },
-        {
-          id: 9,
-          name: '隔壁老王',
-          grade: 4.8,
-          url: 'http://oyd1cktti.bkt.clouddn.com/8.jpg',
-          content: '五台山风景秀丽特别好看字数再长一点，等下做个测试',
-          createTime: '2017-05-23'
-        },
-        {
-          id: 10,
-          name: '对面小赵',
-          grade: 4.9,
-          url: 'http://oyd1cktti.bkt.clouddn.com/8.jpg',
-          content: '五台山风景秀丽特别好看字数再长一点，等下做个测试',
-          createTime: '2017-05-23'
-        }
-      ]
+      comment: []
     }
   },
   methods: {
@@ -246,6 +167,16 @@ export default {
       })
       fetchArticles(queryVo).then(res => {
         this.articles = res.data.list
+      })
+    },
+    setComments() {
+      const queryVo = Object.assign({}, baseQuery, {
+        limit: 12,
+        replyId: 0,
+        sort: '-sc.scenery_score,-sc.publish_time'
+      })
+      fetchScomments(queryVo).then(res => {
+        this.comment = res.data.list
       })
     }
   }
@@ -295,8 +226,8 @@ img {
 }
 .rolling {
   /* 31 */
-  animation: rolling 5s infinite normal linear;
-  -webkit-animation: rolling 5s infinite infinite linear;
+  animation: rolling 8s infinite normal linear;
+  -webkit-animation: rolling 8s infinite infinite linear;
 }
 
 @keyframes rolling {

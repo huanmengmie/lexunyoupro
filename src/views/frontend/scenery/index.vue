@@ -4,15 +4,16 @@
       <el-col :offset="3" :span="18" >
           <el-input
               class="clearfix"
-              placeholder="请输入景点名称"
+              placeholder="请输入关键词"
               prefix-icon="el-icon-search"
-              v-model="searchConditions">
+              @keyup.enter.native="getScenerys"
+              v-model="listQuery.text">
           </el-input>
           <div class="clear scenery-tags">
               <!-- <div v-for="(item,key) in conditions" :key="key">
                   <filter-list :info="item.info" :detail="item.value" @chooseCondition="handleCondition"></filter-list>
               </div> -->
-              <el-checkbox-group v-model="hasChoosed" @change="test">
+              <el-checkbox-group v-model="hasChoosed" @change="chooseTag">
                 <el-checkbox v-for="item in tagArray" :label="item.id" :key="item.id" border style="margin-bottom:1rem;">{{item.value}}</el-checkbox>
               </el-checkbox-group>
           </div>
@@ -23,16 +24,19 @@
               <el-menu-item index="score">网友评分</el-menu-item>
               <el-cascader
                 placeholder="请输入地址"
-                :options="scenerySearch"
+                :options="provinces"
                 filterable
-                change-on-select
+                clearable
+                :props="props"
+                @active-item-change = "handleProvinceChange"
+                @change="filterByArea"
                 style="top:.5rem"
               ></el-cascader>
             </el-menu>
           </div>
           </el-col>
   </el-row>
-  <div style="padding-bottom:5rem;">
+  <div style="padding-bottom:5rem;min-height:400px;" ref="showArea">
       <el-row>
         <el-col :span="6" v-for="(item,key) in scenerys" :key="item.id" :offset="key%3 == 0 ?3:0" style="padding:0 30px;">
           <show-scenery-card :info="item" :isScore="true" style="margin:1rem 0"></show-scenery-card>
@@ -47,6 +51,7 @@ import ShowSceneryCard from '@/components/frontend/showSceneryCard'
 import filterList from '@/components/frontend/filterList'
 import { fetchConstant } from '@/api/constant'
 import { fetchList } from '@/api/scenery'
+import { getCitys } from '@/api/city'
 
 export default {
   components: {
@@ -56,65 +61,30 @@ export default {
   mounted() {
     this.getScenerys()
     this.getTags()
+    this.setProvince()
   },
   data() {
     return {
-      searchConditions: '',
       scenerys: [],
       tagArray: [],
+      provinces: [],
       hasChoosed: [],
       listQuery: {
         page: 1,
         limit: 10,
         simple: false,
+        deleted: false,
+        privinceId: undefined,
+        cityId: undefined,
         constantId: undefined,
+        text: undefined,
         sort: '-si.scenery_score,-si.publish_time'
       },
-      scenerySearch: [],
-      conditions: [
-        {
-          info: '推荐月份',
-          type: 'month',
-          value: [
-            {
-              id: 1,
-              type: 'month',
-              value: '1月'
-            },
-            {
-              id: 2,
-              type: 'month',
-              value: '2月'
-            },
-            {
-              id: 3,
-              type: 'month',
-              value: '3月'
-            }
-          ]
-        },
-        {
-          info: '旅游标签',
-          type: 'labels',
-          value: [
-            {
-              id: 4,
-              type: 'tags',
-              value: '亲子游'
-            },
-            {
-              id: 5,
-              type: 'tags',
-              value: '度蜜月'
-            },
-            {
-              id: 6,
-              type: 'tags',
-              value: '高山流水'
-            }
-          ]
-        }
-      ]
+      props: { // 级联选择器属性
+        value: 'basicCitysId',
+        label: 'basicCitysName',
+        children: 'citys'
+      }
     }
   },
   methods: {
@@ -128,9 +98,18 @@ export default {
         this.tagArray = res.data.list
       })
     },
+    setProvince() {
+      getCitys(undefined, 1).then(res => {
+        const data = res.data.list
+        data.forEach(item => {
+          item.citys = []
+        })
+        this.provinces = data
+      })
+    },
     scenerySort(key) {
       if (key === 'all') {
-        this.listQuery.sort = '-si.scenery_score,-si.publish_time'
+        this.resetQuery()
       } else if (key === 'time') {
         this.listQuery.sort = '-si.publish_time'
       } else if (key === 'score') {
@@ -139,17 +118,61 @@ export default {
       this.getScenerys()
     },
     getScenerys() {
+      const loading = this.$loading({
+        target: this.$refs.showArea,
+        text: '正在拼命加载中...'
+      })
       fetchList(this.listQuery).then(res => {
-        this.scenerys = res.data.list
+        if (res.code === 20000) {
+          this.scenerys = res.data.list
+        } else {
+          this.$message({
+            typs: 'info',
+            message: '没有找到符合条件的内容，看看推荐吧！'
+          })
+        }
+        loading.close()
       })
     },
-    test() {
+    chooseTag() {
       if (this.hasChoosed.length > 1) {
         this.hasChoosed.shift()
       }
-      this.listQuery.constantId = this.hasChoosed[0]
+      if (this.hasChoosed.length > 0) {
+        this.listQuery.constantId = this.hasChoosed[0]
+        this.getScenerys()
+      }
+    },
+    handleProvinceChange(val) { // 省市二级联动获取数据
+      const item = this.getCascaderObj(val[0], this.provinces)
+      getCitys(val[0], undefined).then(res => {
+        item.citys = res.data.list
+      })
+    },
+    getCascaderObj(val, opt) { // 通过id找到数组中的元素
+      for (var item of opt) {
+        if (item.basicCitysId === val) {
+          return item
+        }
+      }
+    },
+    filterByArea(val) {
+      this.listQuery.privinceId = val[0]
+      this.listQuery.cityId = val[1]
       this.getScenerys()
-      console.log(1)
+    },
+    resetQuery() {
+      this.listQuery = {
+        page: 1,
+        limit: 10,
+        simple: false,
+        deleted: false,
+        privinceId: undefined,
+        cityId: undefined,
+        constantId: undefined,
+        text: undefined,
+        sort: '-si.scenery_score,-si.publish_time'
+      }
     }
   }
 }

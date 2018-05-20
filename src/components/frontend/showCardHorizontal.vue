@@ -2,36 +2,36 @@
   <div style="padding:10px;" class="clearfix">
     <el-row :gutter="20">
       <el-col :span="6">
-          <img :src="info.url" style="width:100%;height:100%;">
+        <router-link :to="{ name:'sceneryDetail', params:{id: info.sceneryInfo && info.sceneryInfo.id}}">
+          <img :src="info.sceneryInfo && info.sceneryInfo.avatar" style="width:100%;height:100%;">
+        </router-link>
+          
       </el-col>
       <el-col :span="18" style="position:relative;">
         <div class="clearfix">
-          <span style="float:left;">{{info.name}}</span>
+          <span style="float:left;">{{info.customer.userName}}</span>
           <el-rate
-              v-model="info.grade"
+              v-model="info.sceneryScore"
               disabled
               show-score
               text-color="#ff9900"
-              score-template="{value}" style="float:right;">
+              style="float:right;">
           </el-rate>
         </div>
         <blockquote class="content">{{ content }}</blockquote>
-        <time class="time">{{ info.createTime }}</time>
+        <time class="time">{{ info.publishTime }}</time>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
+import { textSubString } from '@/utils'
 export default {
   props: ['info'],
   computed: {
     content() {
-      if (this.info.content.length > 50) {
-        return this.info.content.substring(0, 50) + '...'
-      } else {
-        return this.info.content
-      }
+      return textSubString(this.info.content, 50)
     }
   }
 }

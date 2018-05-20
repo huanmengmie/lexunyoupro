@@ -3,7 +3,7 @@
     <div class="image-box">
       <img :src="info.avatar" class="image">
       <section class="clear">
-        <address class="time">{{ info.province.basicCitysName }}-{{ info.province.basicCitysName }}</address>
+        <address class="time">{{ info.province.basicCitysName }}-{{ info.city.basicCitysName }}</address>
         <time class="time" style="float:right;">{{ info.publishTime }}</time>
       </section>
     </div>

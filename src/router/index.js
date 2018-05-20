@@ -68,7 +68,7 @@ export const constantRouterMap = [
     hidden: true,
     children: [
       {
-        name: 'ArticleShow',
+        name: 'articleShow',
         path: 'show',
         component: () => import('@/views/frontend/article/index')
       },
@@ -134,7 +134,7 @@ export const constantRouterMap = [
       {
         path: 'update',
         name: 'MyinfoUpdate',
-        component: () => import('@/views/backend/manage/index.vue'),
+        component: () => import('@/views/backend/myinfo/update'),
         meta: { title: '修改信息', icon: 'configuration' }
       }
     ]
