@@ -34,7 +34,6 @@
           active-color="#ff4949"
           inactive-text="是"
           inactive-color="#13ce66"
-          @change="update(scope.row)"
           disabled>
         </el-switch>
       </template>
@@ -146,9 +145,6 @@ export default {
         false: 'info'
       }
       return statusMap[status]
-    },
-    timeFilter(time) {
-      return parseTime(time)
     }
   },
   created() {
@@ -159,7 +155,6 @@ export default {
       this.loading = true
       this.$emit('create') // for test
       fetchConstant(this.listQuery).then(response => {
-        // this.list = response.data.items
         this.total = response.data.total
         this.list = response.data.list
         this.loading = false

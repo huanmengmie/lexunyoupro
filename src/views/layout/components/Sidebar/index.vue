@@ -23,10 +23,11 @@ export default {
   components: { SidebarItem, ScrollBar },
   computed: {
     ...mapGetters([
-      'sidebar'
+      'sidebar',
+      'permission_routers'
     ]),
     routes() {
-      return this.$router.options.routes
+      return this.permission_routers
     },
     isCollapse() {
       return !this.sidebar.opened

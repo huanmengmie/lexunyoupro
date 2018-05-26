@@ -34,13 +34,24 @@ export function parseTime(time, cFormat) {
   return time_str
 }
 
+export function newDate(time) {
+  const date = {
+    y: time.substr(0, 4),
+    m: time.substr(5, 2) - 1,
+    d: time.substr(8, 2),
+    h: time.substr(11, 2),
+    i: time.substr(14, 2),
+    s: time.substr(17, 2)
+  }
+  // 2018-05-11 02:45:43
+  const d = new Date(date.y, date.m, date.d, date.h, date.i, date.s)
+  return d
+}
+
 export function formatTime(time, option) {
-  time = +time * 1000
-  const d = new Date(time)
-  const now = Date.now()
-
+  const d = newDate(time)
+  const now = new Date()
   const diff = (now - d) / 1000
-
   if (diff < 30) {
     return '刚刚'
   } else if (diff < 3600) { // less 1 hour

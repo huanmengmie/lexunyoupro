@@ -25,7 +25,7 @@
     </div>
 
     <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row
-      style="width: 100%" empty-text="您暂未发布随笔">
+      style="width: 100%" empty-text="无">
       <el-table-column align="center" :label="'序号'" width="65" type="index">
       </el-table-column>
       <el-table-column width="150px" :label="'标题'">
@@ -108,7 +108,6 @@ export default {
         limit: 20,
         sort: '+id',
         simple: false,
-        authorId: this.$store.state.user.id,
         text: undefined,
         constantId: undefined,
         startTime: undefined,
@@ -150,16 +149,9 @@ export default {
       if (this.listQuery.endTime !== undefined) {
         this.listQuery.endTime = parseTime(this.listQuery.endTime)
       }
-      fetchList(this.listQuery).then(res => {
-        if (res.code === 20000) {
-          this.list = res.data.list
-          this.total = res.data.total
-        } else {
-          this.$message({
-            type: 'info',
-            message: '您还没有发布过文章'
-          })
-        }
+      fetchList(this.listQuery).then(response => {
+        this.list = response.data.list
+        this.total = response.data.total
         this.listLoading = false
       })
     },

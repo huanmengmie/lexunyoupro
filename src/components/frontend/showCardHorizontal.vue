@@ -19,16 +19,21 @@
           </el-rate>
         </div>
         <blockquote class="content">{{ content }}</blockquote>
-        <time class="time">{{ info.publishTime }}</time>
+        <time class="time">{{ info.publishTime | timeFilter }}</time>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
-import { textSubString } from '@/utils'
+import { textSubString, formatTime } from '@/utils'
 export default {
   props: ['info'],
+  filters: {
+    timeFilter(text) {
+      return formatTime(text)
+    }
+  },
   computed: {
     content() {
       return textSubString(this.info.content, 50)

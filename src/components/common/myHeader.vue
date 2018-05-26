@@ -18,49 +18,84 @@
               <el-menu-item index="/">首页</el-menu-item>
               <el-menu-item index="/scenery">热门景点</el-menu-item>
               <el-menu-item index="/article">交流心得</el-menu-item>
-              <el-menu-item index="/console">控制台</el-menu-item>
-              <el-menu-item index="/register" v-if="!isLogin" @dblclick="isLogin = !isLogin">
+              <el-menu-item index="/console/dashboard">控制台</el-menu-item>
+              <el-menu-item index="/aboutus" @click="activeIndex='/aboutus'">关于</el-menu-item>
+              <el-menu-item index="/register" v-if="avatar == ''">
                   <span @click="openDialog('login')">登录/</span>
                   <router-link :to="{path:'/register'}" tag="span">注册</router-link>
               </el-menu-item>
-              <el-menu-item index="" v-else @click="isLogin = !isLogin">个人信息</el-menu-item>
-              <!-- <el-menu-item index="" v-if="isLogin" @dblclick="isLogin = !isLogin"><span @click="openDialog('login')">登录</span>/<span @click="openDialog('register')">注册</span></el-menu-item>
-              <el-menu-item index="" v-else @click="isLogin = !isLogin">个人信息</el-menu-item> -->
-              <el-menu-item index="/aboutus" @click="activeIndex='/aboutus'">关于</el-menu-item>
+              <el-menu-item index="" v-else>
+                <el-dropdown class="avatar-container" trigger="click">
+                  <div class="avatar-wrapper">
+                    <img class="user-avatar" :src="avatar+'?imageView2/1/w/30/h/30'" style="width:30px;height:30px;border-radius:50%;">
+                    <i class="el-icon-caret-bottom"></i>
+                  </div>
+                  <el-dropdown-menu class="user-dropdown" slot="dropdown">
+                    <router-link class="inlineBlock" to="/myinfo">
+                      <el-dropdown-item>
+                        个人信息
+                      </el-dropdown-item>
+                    </router-link>
+                    <el-dropdown-item divided>
+                      <span style="display:block;" @click="logout">退出</span>
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </el-menu-item>
             </el-menu>
         </el-col>
     </el-row>
-    <el-dialog :title="'登录'" :visible.sync="dialogFormVisible">
-      <el-form :model="form" style="padding-right:5rem;">
-        <el-form-item label="手机号" :label-width="formLabelWidth">
+    <el-dialog :title="'登录'" :visible.sync="dialogFormVisible" :append-to-body="true">
+      <el-form :model="form" :rules="rules" style="padding-right:5rem;" ref="loginForm">
+        <el-form-item label="手机号" :label-width="formLabelWidth" prop="phone" required>
           <el-input v-model.number="form.phone" auto-complete="off" clearable></el-input>
         </el-form-item>
-        <el-form-item label="密码" :label-width="formLabelWidth">
+        <el-form-item label="密码" :label-width="formLabelWidth" prop="password" required>
           <el-input v-model="form.password" type="password" auto-complete="off" clearable></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
       </div>
     </el-dialog>
 </header>
 </template>
 
 <script>
+import { validatePhone } from '@/utils/validate'
+
 export default {
   data() {
+    var checkPhone = (rule, value, callback) => {
+      if (!validatePhone(value)) {
+        this.legalPhone = false
+        callback(new Error('请输入正确的手机号'))
+      } else {
+        this.legalPhone = true
+        callback()
+      }
+    }
     return {
       headerFixed: false,
       activeIndex: '/',
       useRouter: true,
       isLogin: false,
       dialogFormVisible: false,
+      avatar: this.$store.state.user.avatar,
       form: {
         phone: '',
         password: ''
       },
-      formLabelWidth: '120px'
+      formLabelWidth: '120px',
+      rules: {
+        phone: [
+          { validator: checkPhone, trigger: 'blur', required: true }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' }
+        ]
+      }
     }
   },
   mounted() {
@@ -84,6 +119,34 @@ export default {
     openDialog(title) {
       this.form.title = title
       this.dialogFormVisible = true
+    },
+    submitForm() {
+      const _self = this
+      this.$refs.loginForm.validate(valid => {
+        if (valid) {
+          const loading = this.$loading({
+            spinner: 'el-icon-loading',
+            text: '正在登录，请稍候...'
+          })
+          _self.$store.dispatch('Login', this.form).then(() => {
+            _self.$store.dispatch('GetInfo').then(res => {
+              this.avatar = this.$store.state.user.avatar
+            })
+          }).finally(() => {
+            loading.close()
+            this.dialogFormVisible = false
+          })
+        }
+      })
+    },
+    logout() {
+      this.$store.dispatch('LogOut').then(res => {
+        this.$message({
+          tyep: 'info',
+          message: '已退出'
+        })
+        this.avatar = ''
+      })
     }
   }
 }
@@ -110,10 +173,7 @@ time, mark, audio, video {
   font: inherit;
   vertical-align: baseline;
 }
-img {
-  width: 100%;
-  height: 100%;
-}
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -129,12 +189,54 @@ img {
   box-shadow: 0 0 5px 5px #6ab6ef;
 }
 .main-header-fixed {
-  z-index: 5;
+  z-index: 3000;
   opacity: 0.6;
 }
 .clear:after{
   display: table;
   content: "";
   clear: both;
+}
+</style>
+
+<style rel="stylesheet/scss" lang="scss" scoped>
+.navbar {
+  height: 50px;
+  line-height: 50px;
+  border-radius: 0px !important;
+  .hamburger-container {
+    line-height: 58px;
+    height: 50px;
+    float: left;
+    padding: 0 10px;
+  }
+  .screenfull {
+    position: absolute;
+    right: 90px;
+    top: 16px;
+    color: red;
+  }
+  .avatar-container {
+    height: 50px;
+    display: inline-block;
+    position: absolute;
+    right: 35px;
+    .avatar-wrapper {
+      cursor: pointer;
+      margin-top: 5px;
+      position: relative;
+      .user-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 15px;
+      }
+      .el-icon-caret-bottom {
+        position: absolute;
+        right: -20px;
+        top: 25px;
+        font-size: 12px;
+      }
+    }
+  }
 }
 </style>

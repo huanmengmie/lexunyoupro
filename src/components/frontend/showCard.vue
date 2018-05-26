@@ -19,7 +19,7 @@
       <section class="intro-section">{{ info.intro }}</section>
     </div>
     <div class="bottom clearfix">
-      <time class="time">{{ info.publishTime }}</time>
+      <time class="time">{{ info.publishTime | timeFilter }}</time>
       <router-link :to="{ name:'articleDetail', params:{ id: info.id }}">
         <el-button type="text" class="button">查看详情</el-button>
       </router-link>
@@ -28,8 +28,14 @@
 </template>
 
 <script>
+import { formatTime } from '@/utils'
 export default {
   props: ['info', 'isScore'],
+  filters: {
+    timeFilter(text) {
+      return formatTime(text)
+    }
+  },
   data() {
     return {}
   }

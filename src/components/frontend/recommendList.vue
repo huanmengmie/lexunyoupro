@@ -14,7 +14,7 @@
                   </el-badge>
                 </router-link>
               </el-popover>
-              <p class="baseinfo"> <span><svg-icon icon-class="user"/>{{ item.customer.userName }}</span> <time> {{ item.publishTime }} </time></p>
+              <p class="baseinfo"> <span><svg-icon icon-class="user"/>{{ item.customer.userName }}</span> <time> {{ item.publishTime | timeFilter }} </time></p>
             </li>
         </ul>
         <p class="type">热门文章</p>
@@ -31,7 +31,7 @@
                 </el-badge>
               </router-link>
             </el-popover>
-            <p class="baseinfo"> <span><svg-icon icon-class="user"/>{{ item.customer.userName }}</span> <time> {{ item.publishTime }} </time></p>
+            <p class="baseinfo"> <span><svg-icon icon-class="user"/>{{ item.customer.userName }}</span> <time> {{ item.publishTime | timeFilter }} </time></p>
           </li>
         </ul>
     </div>
@@ -40,6 +40,7 @@
 <script>
 import { fetchList as fetchScenerys } from '@/api/scenery'
 import { fetchList as fetchArticles } from '@/api/article'
+import { formatTime } from '@/utils'
 
 const baseQuery = {
   limit: '7',
@@ -53,6 +54,11 @@ export default {
     return {
       scenerys: [],
       articles: []
+    }
+  },
+  filters: {
+    timeFilter(text) {
+      return formatTime(text)
     }
   },
   mounted() {

@@ -7,28 +7,28 @@
               <el-step title="3、注册成功" icon="el-icon-success"></el-step>
             </el-steps>
             <div v-if="activeIndex == 1" class="contents">
-                <el-form status-icon :rules="rules1" label-width="100px">
-                    <el-form-item label="手机号" prop="phone">
-                        <el-input type="text" v-model.number="phone" auto-complete="off" ref="phone"></el-input>
+                <el-form :model="checkPhone" status-icon :rules="rules1" ref="phoneForm" label-width="100px">
+                    <el-form-item label="手机号" prop="phone" required>
+                        <el-input type="text" v-model.number="checkPhone.phone" auto-complete="off" ref="phone"></el-input>
                     </el-form-item>
-                    <el-form-item label="验证">
-                        <el-slider v-model="checkProcess" :show-tooltip="false" @change="checkSuccess"></el-slider>
+                    <el-form-item label="验证" prop="checkProcess" required>
+                        <el-slider v-model="checkPhone.checkProcess" :show-tooltip="false" @change="checkSuccess"></el-slider>
                     </el-form-item>
-                    <el-form-item label="验证码" prop="code" v-show="checkProcess === 100 && legalPhone">
-                        <el-input type="text" v-model.number="inputCode" minlength="6" maxlength="6" auto-complete="off" @change="verifyCode" placeholder="请输入6位验证码"></el-input>
+                    <el-form-item label="验证码" prop="inputCode" v-show="checkPhone.checkProcess === 100 && legalPhone">
+                        <el-input type="text" v-model.number="checkPhone.inputCode" minlength="6" maxlength="6" auto-complete="off" @change="verifyCode" placeholder="请输入6位验证码"></el-input>
                     </el-form-item>
                 </el-form>
-                <el-button type="info" @click="activeIndex++" :disabled="toSecondDisabled">下一步</el-button>
+                <el-button type="info" @click="goNext" :disabled="toSecondDisabled">下一步</el-button>
             </div>
             <div v-else-if="activeIndex == 2" class="contents">
                 <el-form :model="customer" status-icon :rules="rules2" ref="customer" label-width="100px">
-                    <el-form-item label="用户名" prop="customerName">
-                        <el-input type="text" v-model="customer.customerName" maxlength="7" auto-complete="off"></el-input>
+                    <el-form-item label="用户名" prop="userName" required>
+                        <el-input type="text" v-model="customer.userName" maxlength="7" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="密码" prop="password">
+                    <el-form-item label="密码" prop="password" required>
                         <el-input type="password" v-model="customer.password" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="确认密码" prop="checkPassword">
+                    <el-form-item label="确认密码" prop="checkPassword" required>
                         <el-input type="password" v-model="customer.checkPassword" auto-complete="off"></el-input>
                     </el-form-item>
                     <el-form-item>
@@ -39,18 +39,19 @@
             </div>
             <div v-else class="contents">
               <strong><el-alert title="恭喜！注册成功" type="success" :closable="false" style="font-size:24px;"></el-alert></strong>
-              <img src="http://oyd1cktti.bkt.clouddn.com/register-success.gif">
+              <img src="http://oyd1cktti.bkt.clouddn.com/register-success.gif" style="width: 100%;height: 100%;">
             </div>
         </el-col>
     </el-row>
 </template>
 <script>
 import { validatePhone } from '@/utils/validate'
+import { register, ifExist } from '@/api/customer'
 
 export default {
   data() {
     var checkPhone = (rule, value, callback) => {
-      if (!validatePhone(this.phone)) {
+      if (!validatePhone(value)) {
         this.legalPhone = false
         callback(new Error('请输入正确的手机号'))
       } else {
@@ -60,7 +61,7 @@ export default {
     }
     var checkCode = (rule, value, callback) => {
       var reg = /^\d{6}$/
-      if (!reg.test(this.inputCode)) {
+      if (!reg.test(value)) {
         callback(new Error('请输入6位验证码'))
       } else {
         callback()
@@ -87,27 +88,28 @@ export default {
     }
     return {
       activeIndex: 1,
-      phone: '',
       legalPhone: false,
-      checkProcess: 0,
-      inputCode: '',
+      checkPhone: {
+        phone: '',
+        checkProcess: 0,
+        inputCode: ''
+      },
       toSecondDisabled: true,
       customer: {
-        phone: this.phone,
         password: '',
         checkPassword: '',
-        customerName: ''
+        userName: ''
       },
       rules1: {
         phone: [
           { validator: checkPhone, trigger: 'blur', required: true }
         ],
-        code: [
+        inputCode: [
           { validator: checkCode, trigger: 'blur', required: true }
         ]
       },
       rules2: {
-        customerName: [
+        userName: [
           { required: true, message: '请输入昵称', trigger: 'blur' },
           { min: 3, max: 7, message: '长度在 3 到 7 个字符', trigger: 'blur' }
         ],
@@ -124,31 +126,41 @@ export default {
     checkSuccess() {
       if (!this.legalPhone) {
         this.$refs.phone.focus()
-        this.checkProcess = 0
+        this.checkPhone.checkProcess = 0
         this.$message('请先完善手机号')
-      } else if (this.checkProcess === 100) {
-        this.$message('验证码已发送至您的手机请注意查收')
-        // this.$http.get('/api/verifyCode')
-        //   .then(res => {
-        //   })
+        return
+      }
+      if (this.legalPhone && this.checkPhone.checkProcess === 100) {
+        ifExist(this.checkPhone.phone).then(res => {
+          if (res.code === 22222 && res.data === false) {
+            this.$message('验证码已发送至您的手机请注意查收')
+          } else {
+            this.$message('该手机号已被注册')
+            this.legalPhone = false
+            this.$refs.phone.focus()
+          }
+        })
       }
     },
     verifyCode() {
       var reg = /^\d{6}$/
-      if (reg.test(this.inputCode)) {
+      if (reg.test(this.checkPhone.inputCode)) {
         this.toSecondDisabled = false
-        // this.$http.post('/api/verifyCode', {verifyCode: this.inputCode})
-        //   .then(res => {
-        //     if (res.data.result) {
-        //       this.$refs.toSecond.disabled = false
-        //     }
-        //   })
       }
+    },
+    goNext() {
+      this.activeIndex = 2
+      this.$nextTick(() => {
+        this.$refs.customer.clearValidate()
+      })
     },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.activeIndex++
+          this.customer.phone = this.checkPhone.phone
+          register(this.customer).then(res => {
+            this.activeIndex++
+          })
         } else {
           console.log('error submit!!')
           return false
@@ -163,7 +175,13 @@ export default {
 </script>
 
 <style scoped>
-.step {
+.contents{
+  border: 1px dashed #e8e8e8;
+  height: 25rem;
+  margin-bottom: 2rem;
+  padding: 5rem 25rem;
+}
+/* .step {
     padding: 1rem 0;
 }
 .step span{
@@ -193,11 +211,6 @@ export default {
 }
 .active {
     border-bottom: 1px solid #6ab6ef !important;
-}
-.contents{
-    border: 1px dashed #e8e8e8;
-    height: 20rem;
-    margin-bottom: 2rem;
-    padding: 5rem 25rem;
-}
+} */
+
 </style>

@@ -13,3 +13,15 @@ export function setToken(token) {
 export function removeToken() {
   return Cookies.remove(TokenKey)
 }
+
+export function setCookie(key, value, day) {
+  return Cookies.set(key, value, { expires: 1 })
+}
+
+export function getCookie(key) {
+  return Cookies.get(key)
+}
+
+export function removeCookie(key) {
+  return Cookies.removeCookie(key)
+}

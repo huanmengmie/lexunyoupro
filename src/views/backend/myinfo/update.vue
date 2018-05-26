@@ -1,170 +1,158 @@
 <template>
-    <el-row>
-      <el-col :offset="8" :span="8">
-        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-          <el-form-item label="头像">
-            <el-col :span="8" :offset="8">
-              <el-upload
-                class="avatar-uploader"
-                draggable
-                :action="qiniu"
-                :show-file-list="false"
-                :on-success="handleAvatarSuccess"
-                :on-change="handleAvatarChange"
-                :before-upload="beforeAvatarUpload">
-                <img v-if="ruleForm.avatar" :src="ruleForm.avatar" class="avatar">
-                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              </el-upload>
-            </el-col>
-          </el-form-item>
-          <el-form-item label="昵称" prop="userName">
-            <el-input v-model="ruleForm.userName" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="手机号" prop="phone" required>
-            <el-input v-model="ruleForm.phone" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="性别" prop="sex">
-            <el-radio-group v-model="ruleForm.sex">
-              <el-radio label="保密"></el-radio>
-              <el-radio label="男"></el-radio>
-              <el-radio label="女"></el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="密码" prop="password" required>
-            <el-input type="password" v-model="ruleForm.password" clearable @change="changePass = true"></el-input>
-          </el-form-item>
-          <el-form-item label="确认密码" v-show="changePass" prop="checkPass" required>
-            <el-input type="password" v-model="ruleForm.checkPass" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="邮箱" prop="email" required>
-            <el-input type="text" v-model="ruleForm.email" clearable></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="submitForm('ruleForm')">确认更新</el-button>
-            <el-button @click="resetForm('ruleForm')">重置</el-button>
-          </el-form-item>
-        </el-form>
-      </el-col>
+    <el-row style="margin-top:4rem;">
+        <el-col :offset="3" :span="18">
+            <el-steps :active="activeIndex" simple style="margin-top:3rem;">
+              <el-step title="1、验证手机号" icon="el-icon-phone-outline"></el-step>
+              <el-step title="2、输入新密码" icon="el-icon-edit"></el-step>
+            </el-steps>
+            <div v-if="activeIndex == 1" class="contents">
+                <el-form :model="checkPhone" status-icon :rules="rules1" ref="phoneForm" label-width="100px">
+                    <el-form-item label="手机号" prop="phone">
+                        <el-input type="text" v-model.number="checkPhone.phone" auto-complete="off" ref="phone"></el-input>
+                    </el-form-item>
+                    <el-form-item label="验证" prop="checkProcess" required>
+                        <el-slider v-model="checkPhone.checkProcess" :show-tooltip="false" @change="checkSuccess"></el-slider>
+                    </el-form-item>
+                    <el-form-item label="验证码" prop="inputCode" v-show="checkPhone.checkProcess === 100 && legalPhone">
+                        <el-input type="text" v-model.number="checkPhone.inputCode" minlength="6" maxlength="6" auto-complete="off" @change="verifyCode" placeholder="请输入6位验证码"></el-input>
+                    </el-form-item>
+                </el-form>
+                <el-button type="info" @click="goNext" :disabled="toSecondDisabled" style="margin-left:6rem;">下一步</el-button>
+            </div>
+            <div v-else class="contents">
+                <el-form :model="customer" status-icon :rules="rules2" ref="dataForm" label-width="100px">
+                    <el-form-item label="新密码" prop="password">
+                        <el-input type="password" v-model="customer.password" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="确认密码" prop="checkPassword">
+                        <el-input type="password" v-model="customer.checkPassword" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="submitForm('dataForm')">提交</el-button>
+                        <el-button @click="resetForm('dataForm')">重置</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </el-col>
     </el-row>
 </template>
-
 <script>
-import { fetchCustomer, updateCustomer } from '@/api/customer'
-import { validateEmail, validatePhone } from '@/utils/validate'
+import { validatePhone } from '@/utils/validate'
+import { updateCustomer } from '@/api/customer'
 
 export default {
   data() {
-    const validateEmailAddress = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入邮箱号'))
-      } else {
-        if (validateEmail(value)) {
-          callback()
-        } else {
-          callback(new Error('请输入正确的邮箱地址'))
-        }
-      }
-    }
     const checkPhone = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入手机号'))
+      if (!validatePhone(value)) {
+        this.legalPhone = false
+        callback(new Error('请输入正确的手机号'))
       } else {
-        if (validatePhone(value)) {
-          callback()
-        } else {
-          callback(new Error('请输入正确的手机号'))
-        }
+        this.legalPhone = true
+        callback()
       }
     }
-    var validatePass = (rule, value, callback) => {
+    const checkCode = (rule, value, callback) => {
+      var reg = /^\d{6}$/
+      if (!reg.test(value)) {
+        callback(new Error('请输入6位验证码'))
+      } else {
+        callback()
+      }
+    }
+    const validatePass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入密码'))
       } else {
-        if (this.ruleForm.checkPass !== '') {
-          this.$refs.ruleForm.validateField('checkPass')
+        if (this.customer.checkPassword !== '') {
+          this.$refs.dataForm.validateField('checkPassword')
         }
         callback()
       }
     }
-    var validatePass2 = (rule, value, callback) => {
+    const validatePass2 = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
-      } else if (value !== this.ruleForm.password) {
+      } else if (value !== this.customer.password) {
         callback(new Error('两次输入密码不一致!'))
       } else {
         callback()
       }
     }
     return {
-      qiniu: this.$store.state.constant.qiniu,
-      changePass: false,
-      ruleForm: {
-        id: this.$store.state.user.id,
-        userName: '',
-        password: '',
-        checkPass: '',
+      activeIndex: 1,
+      legalPhone: false,
+      checkPhone: {
         phone: '',
-        avatar: '',
-        email: '',
-        sex: ''
+        checkProcess: 0,
+        inputCode: ''
       },
-      rules: {
-        userName: [
-          { required: true, message: '请输入昵称', trigger: 'blur' },
-          { min: 3, max: 7, message: '长度在 3 到 7 个字符', trigger: 'blur' }
-        ],
+      toSecondDisabled: true,
+      customer: {
+        password: '',
+        checkPassword: '',
+        id: this.$store.state.user.id
+      },
+      rules1: {
         phone: [
-          { validator: checkPhone, trigger: 'blur' }
+          { validator: checkPhone, trigger: 'blur', required: true }
         ],
-        sex: [
-          { required: true, message: '请选择性别', trigger: 'change' }
+        checkPassword: [
+          { required: true, message: '拖动滑块以完成验证' }
         ],
-        email: [
-          { validator: validateEmailAddress, trigger: 'blur' }
-        ],
+        inputCode: [
+          { validator: checkCode, trigger: 'blur', required: true }
+        ]
+      },
+      rules2: {
         password: [
-          { validator: validatePass, trigger: 'blur' }
+          { validator: validatePass, trigger: 'blur', required: true }
         ],
-        checkPass: [
-          { validator: validatePass2, trigger: 'blur' }
+        checkPassword: [
+          { validator: validatePass2, trigger: 'blur', required: true }
         ]
       }
     }
   },
-  mounted() {
-    this.setCustomer()
-  },
   methods: {
-    setCustomer() {
-      fetchCustomer(this.$store.state.user.id).then(res => {
-        this.ruleForm = res.data
-        this.ruleForm.checkPass = res.data.password
-      })
-    },
-    handleAvatarChange(file) {
-      this.ruleForm.avatar = URL.createObjectURL(file.raw)
-    },
-    handleAvatarSuccess(res, file) {
-      this.ruleForm.avatar = res.picUrl
-    },
-    beforeAvatarUpload(file) {
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!')
+    checkSuccess() {
+      if (!this.legalPhone) {
+        this.$refs.phone.focus()
+        this.checkPhone.checkProcess = 0
+        this.$message('请先完善手机号')
+      } else if (this.checkPhone.checkProcess === 100) {
+        this.$message('验证码已发送至您的手机请注意查收')
       }
-      return isLt2M
+    },
+    verifyCode() {
+      var reg = /^\d{6}$/
+      if (reg.test(this.checkPhone.inputCode)) {
+        this.toSecondDisabled = false
+      }
+    },
+    goNext() {
+      this.activeIndex = 2
+      this.$nextTick(() => {
+        this.$refs.dataForm.clearValidate()
+      })
     },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           const loading = this.$loading()
-          updateCustomer(this.ruleForm).then(res => {
+          this.customer.phone = this.checkPhone.phone
+          updateCustomer(this.customer).then(res => {
             this.$message({
-              type: 'success',
-              message: res.message
+              type: 'info',
+              message: '密码修改成功，请重新登录!'
             })
+            this.$store.dispatch('LogOut')
+            this.$router.push({ path: '/login' })
+          }).finally(() => {
             loading.close()
           })
+        } else {
+          console.log('error submit!!')
+          return false
         }
       })
     },
@@ -176,34 +164,10 @@ export default {
 </script>
 
 <style scoped>
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409EFF;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-  border: 1px dashed;
-  border-radius: 50%;
-}
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-  border-radius: 50%;
-}
-.el-form {
-  margin-top: 3rem;
+.contents{
+  border: 1px dashed #e8e8e8;
+  height: 25rem;
+  margin-bottom: 2rem;
+  padding: 5rem 25rem;
 }
 </style>
-

@@ -106,12 +106,16 @@ export const constantRouterMap = [
         component: () => import('@/views/frontend/register')
       }
     ]
-  },
+  }
+]
+
+export const asyncRouterMap = [
   {
     path: '/console',
     component: Layout,
     redirect: '/console/dashboard',
     name: 'console',
+    meta: { roles: ['user', 'admin'] },
     hidden: true,
     children: [{
       path: 'dashboard',
@@ -123,19 +127,34 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/myinfo/show',
     name: 'Myinfo',
-    meta: { title: '个人信息', icon: 'setup' },
+    meta: { title: '个人信息', icon: 'setup', roles: ['user', 'admin'] },
     children: [
       {
         path: 'show',
         name: 'MyinfoShow',
-        component: () => import('@/views/backend/manage/index.vue'),
+        component: () => import('@/views/backend/myinfo/index'),
         meta: { title: '概览', icon: 'eye' }
       },
       {
         path: 'update',
         name: 'MyinfoUpdate',
         component: () => import('@/views/backend/myinfo/update'),
-        meta: { title: '修改信息', icon: 'configuration' }
+        meta: { title: '修改密码', icon: 'configuration' }
+      }
+    ]
+  },
+  {
+    path: '/mcustomer',
+    component: Layout,
+    redirect: '/mcustomer/show',
+    name: 'Mcustomer',
+    meta: { title: '用户管理', icon: 'setup', roles: ['admin'] },
+    children: [
+      {
+        path: 'show',
+        name: 'McustomerShow',
+        component: () => import('@/views/backend/mcustomer/index'),
+        meta: { title: '所有用户', icon: 'user' }
       }
     ]
   },
@@ -144,17 +163,23 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/marticle/show',
     name: 'Marticle',
-    meta: { title: '我的文章', icon: 'setup' },
+    meta: { title: '文章管理', icon: 'setup', roles: ['admin', 'user'] },
     children: [
       {
         path: 'show',
         name: 'MarticleShow',
         component: () => import('@/views/backend/marticle/index.vue'),
-        meta: { title: '我的随笔', icon: 'eye' }
+        meta: { title: '我的随笔', icon: 'setup' }
+      },
+      {
+        path: 'all',
+        name: 'MarticleAll',
+        component: () => import('@/views/backend/marticle/all.vue'),
+        meta: { title: '所有文章', icon: 'setup', roles: ['admin'] }
       },
       {
         path: 'add',
-        name: 'MarticleAdd',
+        name: 'MyArticleAdd',
         component: () => import('@/views/backend/marticle/add.vue'),
         meta: { title: '发布文章', icon: 'configuration' }
       },
@@ -172,7 +197,7 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/mscenery/show',
     name: 'Mscenery',
-    meta: { title: '景点管理', icon: 'setup' },
+    meta: { title: '景点管理', icon: 'setup', roles: ['admin'] },
     children: [
       {
         path: 'show',
@@ -200,18 +225,18 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/permission/show',
     name: 'Permission',
-    meta: { title: '权限控制', icon: 'setup' },
+    meta: { title: '权限控制', icon: 'setup', roles: ['admin'] },
     children: [
       {
         path: 'show',
         name: 'PermissionShow',
-        component: () => import('@/views/backend/manage/index.vue'),
+        component: () => import('@/views/backend/permission/index.vue'),
         meta: { title: '概览', icon: 'eye' }
       },
       {
         path: 'setup',
         name: 'PermissionSetup',
-        component: () => import('@/views/backend/manage/index.vue'),
+        component: () => import('@/views/backend/permission/setup'),
         meta: { title: '配置', icon: 'configuration' }
       }
     ]
@@ -221,7 +246,7 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/manamge/banner',
     name: 'Manage',
-    meta: { title: '其他', icon: 'recommend' },
+    meta: { title: '其他', icon: 'recommend', roles: ['admin'] },
     children: [
       {
         path: 'banner',
@@ -234,12 +259,6 @@ export const constantRouterMap = [
         name: 'ManageScenery',
         component: () => import('@/views/backend/manage/tags.vue'),
         meta: { title: '标签管理', icon: 'picture' }
-      },
-      {
-        path: 'article',
-        name: 'ManageArticle',
-        component: () => import('@/views/backend/manage/article.vue'),
-        meta: { title: '文章筛选', icon: 'article' }
       }
     ]
   },

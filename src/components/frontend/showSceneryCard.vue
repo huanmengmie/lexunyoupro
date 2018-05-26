@@ -4,7 +4,7 @@
       <img :src="info.avatar" class="image">
       <section class="clear">
         <address class="time">{{ info.province.basicCitysName }}-{{ info.city.basicCitysName }}</address>
-        <time class="time" style="float:right;">{{ info.publishTime }}</time>
+        <time class="time" style="float:right;">{{ info.publishTime | timeFilter }}</time>
       </section>
     </div>
     <div class="center">
@@ -34,8 +34,14 @@
 </template>
 
 <script>
+import { formatTime } from '@/utils'
 export default {
   props: ['info', 'isScore'],
+  filters: {
+    timeFilter(text) {
+      return formatTime(text)
+    }
+  },
   data() {
     return {}
   }

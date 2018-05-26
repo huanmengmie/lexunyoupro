@@ -4,7 +4,7 @@
       <div class="article-item-author">
         <img :src="articleInfo.customer && articleInfo.customer.avatar">
         <span>{{ articleInfo.customer && articleInfo.customer.userName}}</span>
-        <span style="padding:0 1rem;">{{ articleInfo.publishTime}}</span>
+        <span style="padding:0 1rem;">{{ articleInfo.publishTime | timeFilter}}</span>
         <el-tag type="primary" size="small">{{ articleInfo.constant && articleInfo.constant.value }}</el-tag>
       </div>
       <article class="article-content">
@@ -24,12 +24,17 @@
 </template>
 
 <script>
-import { textSubString } from '@/utils'
+import { textSubString, formatTime } from '@/utils'
 export default {
   props: ['articleInfo'],
   computed: {
     text() {
       return textSubString(this.articleInfo.intro, 120)
+    }
+  },
+  filters: {
+    timeFilter(text) {
+      return formatTime(text)
     }
   }
 }

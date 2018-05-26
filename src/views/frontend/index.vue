@@ -90,10 +90,10 @@
 import ShowSceneryCard from '@/components/frontend/showSceneryCard'
 import ShowCard from '@/components/frontend/showCard'
 import ShowCardHorizontal from '@/components/frontend/showCardHorizontal'
-import { getBanner } from '@/api/frontend/index'
 import { fetchList as fetchScenerys } from '@/api/scenery'
 import { fetchList as fetchArticles } from '@/api/article'
 import { fetchScomments } from '@/api/scomment'
+import { fetchConstant } from '@/api/constant'
 
 const baseQuery = {
   limit: '3',
@@ -147,7 +147,7 @@ export default {
         simple: true,
         sort: '-publish_time'
       })
-      getBanner(queryVo).then(res => {
+      fetchConstant(queryVo).then(res => {
         this.banners = res.data.list
       }).catch(err => {
         console.log(err)
