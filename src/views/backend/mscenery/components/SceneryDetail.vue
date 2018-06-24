@@ -5,16 +5,21 @@
         <template v-if="fetchSuccess">
           <div style="background: #d0d0d0;height:40px;">
           <div style="float:right;" class="clear">
-            <router-link style="margin-right:15px;" v-show='isEdit' :to="{ path:'/mscenery/add'}">
+            <router-link style="margin-right:15px;" v-if='isEdit' :to="{ path:'/mscenery/add'}">
               <el-button type="info" icon="el-icon-edit">发布新景点</el-button>
             </router-link>
-            <el-button v-loading="loading" style="margin-left: 10px;" v-if="isEdit" type="success" @click="updateForm(false)">更新
-            </el-button>
-            <el-button v-loading="loading" style="margin-left: 10px;" v-else type="success" @click="submitForm(false)">发布
-            </el-button>
-             <el-button v-loading="loading" style="margin-left: 10px;" v-if="isEdit" type="warning" @click="updateForm(true)">草稿
-            </el-button>
-            <el-button v-loading="loading" type="warning" v-else @click="submitForm(true)">草稿</el-button>
+            <el-button type="info" icon="el-icon-edit" v-else @click="resetForm">发布新景点</el-button>
+            <div v-if="isEdit">
+              <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="updateForm(false)">更新
+              </el-button>
+              <el-button v-loading="loading" style="margin-left: 10px;" type="warning" @click="updateForm(true)">草稿
+              </el-button>
+            </div>
+            <div v-else>
+              <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm(false)">发布
+              </el-button>
+              <el-button v-loading="loading" type="warning" @click="submitForm(true)">草稿</el-button>
+            </div>
           </div>
           </div>
         </template>
@@ -33,8 +38,6 @@
               <span v-show="postForm.sceneryName.length>=26" class='title-prompt'>app可能会显示不全</span>
             </el-form-item>
 
-            
-
             <div class="postInfo-container">
               <el-row>
                 <el-col :span="8">
@@ -51,7 +54,7 @@
                   </el-form-item>
                 </el-col>
 
-                 <el-col :span="8">
+                <el-col :span="8">
                   <el-form-item label-width="100px" label="发布时间:" class="postInfo-container-item">
                     <el-date-picker v-model="postForm.publishTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期时间">
                     </el-date-picker>
@@ -119,12 +122,12 @@ import { parseTime } from '@/utils'
 
 const defaultForm = {
   id: undefined,
-  sceneryName: '', // 文章题目
-  sceneryScore: '',
-  avatar: '', // 文章图片
-  sceneryIntro: '', // 文章摘要
-  content: '', // 文章内容
+  sceneryName: '', // 景点标题
+  avatar: '',
+  sceneryIntro: '', // 景点摘要
+  content: '',
   provinceId: '',
+  sceneryScore: 3.5,
   cityId: '',
   address: '',
   constantId: '',
@@ -239,6 +242,9 @@ export default {
       getCitys(this.postForm.provinceId, undefined).then(res => {
         this.cityArray = res.data.list
       })
+    },
+    resetForm() {
+      this.$refs.postForm.resetFields()
     },
     submitForm(isDraft) {
       this.postForm.publishTime = parseTime(this.postForm.publishTime)

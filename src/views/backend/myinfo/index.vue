@@ -28,7 +28,7 @@
             <el-input v-model="ruleForm.userName" clearable></el-input>
           </el-form-item>
           <el-form-item label="手机号" prop="phone" required>
-            <el-input v-model="ruleForm.phone" clearable></el-input>
+            <el-input v-model="ruleForm.phone" disabled></el-input>
           </el-form-item>
           <el-form-item label="性别" prop="sex">
             <el-radio-group v-model="ruleForm.sex">

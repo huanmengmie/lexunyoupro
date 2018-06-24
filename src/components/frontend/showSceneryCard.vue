@@ -3,13 +3,19 @@
     <div class="image-box">
       <img :src="info.avatar" class="image">
       <section class="clear">
-        <address class="time">{{ info.province.basicCitysName }}-{{ info.city.basicCitysName }}</address>
+        <address class="time">{{ info.province && info.province.basicCitysName }}-{{ info.city && info.city.basicCitysName }}</address>
         <time class="time" style="float:right;">{{ info.publishTime | timeFilter }}</time>
       </section>
     </div>
     <div class="center">
+      <span style="float:left;position:relative;">
+        <svg-icon icon-class="eye" style="font-size:20px;"></svg-icon>
+        {{ info.readNumber }}
+      </span>
       <span>{{ info.sceneryName }}</span>
-      <span style="float:right;position:relative;">3240<i class="iconfont" style="font-size:20px;color:red;">&#xe613;</i></span>
+      <span style="float:right;position:relative;">{{ info.likeNumber }}
+        <svg-icon icon-class="like" style="font-size:20px;"></svg-icon>
+      </span>
       <el-rate v-if="isScore"
         v-model="info.sceneryScore"
         disabled
@@ -25,7 +31,7 @@
       <section class="intro-section">{{ info.sceneryIntro }}</section>
     </div>
     <div class="bottom clearfix">
-      <el-tag type="primary" size="small" style="float:left">{{ info.constant.value }}</el-tag>
+      <el-tag type="primary" size="small" style="float:left">{{ info.constant && info.constant.value }}</el-tag>
       <router-link :to="{ name:'sceneryDetail', params:{ id: info.id }}">
         <el-button type="text" class="button">查看详情</el-button>
       </router-link>

@@ -11,11 +11,14 @@
         <router-link :to="{ name: 'articleDetail', params:{id:articleInfo.id}}" tag="p" class="article-title">{{ articleInfo.title}}</router-link>
         <section>{{ text }}</section>
       </article>
-      <ul class="article-num clear">
-        <li><svg-icon icon-class="star"></svg-icon><span>{{ articleInfo.score }}</span></li>
-        <li><i class="iconfont">&#xe600;</i><span>15</span></li>
-        <li><i class="iconfont">&#xe613;</i><span>30</span></li>
-      </ul>
+      <el-col :span="12"><address class="time">{{ articleInfo.province && articleInfo.province.basicCitysName }}-{{ articleInfo.city && articleInfo.city.basicCitysName }}-{{articleInfo.address}}</address></el-col>
+      <el-col :span="12">
+        <ul class="article-num">
+          <li><svg-icon icon-class="star"></svg-icon><span>{{ articleInfo.score }}</span></li>
+          <li><svg-icon icon-class="eye"></svg-icon><span>{{ articleInfo.readNumber }}</span></li>
+          <li><svg-icon icon-class="like"></svg-icon><span>{{ articleInfo.likeNumber }}</span></li>
+        </ul>
+      </el-col>
     </el-col>
     <el-col :span="4">
       <img :src="articleInfo.avatar" class="article-avatar">
@@ -41,6 +44,13 @@ export default {
 </script>
 
 <style scoped>
+.time {
+  position: absolute;
+  bottom: 1rem;
+  font-size: 0.8rem;
+  color:#333333;
+  float: left;
+}
 .el-row{
   text-align: left;
   position: relative;
@@ -83,6 +93,9 @@ export default {
 .article-num li{
   float: left;
   padding: 0 .3rem;
+}
+.article-num > li > span{
+  margin: 0 4px;
 }
 .article-avatar {
   width:100%;

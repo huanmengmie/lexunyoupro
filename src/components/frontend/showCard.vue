@@ -2,8 +2,14 @@
   <el-card :body-style="{ padding: '0.2rem' }">
     <img :src="info.avatar" class="image">
     <div class="center">
+      <span style="float:left;position:relative;">
+        <svg-icon icon-class="eye" style="font-size:20px;"></svg-icon>
+        {{ info.readNumber }}
+      </span>
       <span>{{ info.title }}-{{info.customer.userName}}</span>
-      <span style="float:right;position:relative;">3380<i class="iconfont" style="font-size:20px;color:red;">&#xe613;</i></span>
+      <span style="float:right;position:relative;">{{ info.likeNumber }}
+        <svg-icon icon-class="like" style="font-size:20px;"></svg-icon>
+      </span>
       <el-rate v-if="isScore"
         v-model="info.score"
         disabled

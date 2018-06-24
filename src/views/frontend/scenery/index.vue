@@ -10,9 +10,6 @@
               v-model="listQuery.text">
           </el-input>
           <div class="clear scenery-tags">
-              <!-- <div v-for="(item,key) in conditions" :key="key">
-                  <filter-list :info="item.info" :detail="item.value" @chooseCondition="handleCondition"></filter-list>
-              </div> -->
               <el-checkbox-group v-model="hasChoosed" @change="chooseTag">
                 <el-checkbox v-for="item in tagArray" :label="item.id" :key="item.id" border style="margin-bottom:1rem;">{{item.value}}</el-checkbox>
               </el-checkbox-group>
@@ -22,6 +19,8 @@
               <el-menu-item index="all">综合</el-menu-item>
               <el-menu-item index="time">发布时间</el-menu-item>
               <el-menu-item index="score">网友评分</el-menu-item>
+              <el-menu-item index="read">浏览量</el-menu-item>
+              <el-menu-item index="like">喜欢量</el-menu-item>
               <el-cascader
                 placeholder="请输入地址"
                 :options="provinces"
@@ -42,6 +41,10 @@
           <show-scenery-card :info="item" :isScore="true" style="margin:1rem 0"></show-scenery-card>
         </el-col>
       </el-row>
+      <p style="margin-top: 20px;">
+        <span v-if="showNext" @click="nextPage" style="cursor: pointer;text-decoration: underline;">继续观看</span>
+        <span v-else>没有更多了...</span>
+      </p>
   </div>
 </div>
 </template>
@@ -63,6 +66,16 @@ export default {
     this.getTags()
     this.setProvince()
   },
+  computed: {
+    showNext: function() {
+      const num = this.listQuery.page * this.listQuery.limit
+      if (num < this.listQuery.total) {
+        return true
+      } else {
+        return false
+      }
+    }
+  },
   data() {
     return {
       scenerys: [],
@@ -71,14 +84,15 @@ export default {
       hasChoosed: [],
       listQuery: {
         page: 1,
-        limit: 10,
+        limit: 6,
+        total: '',
         simple: false,
         deleted: false,
         privinceId: undefined,
         cityId: undefined,
         constantId: undefined,
         text: undefined,
-        sort: '-si.scenery_score,-si.publish_time'
+        sort: '-si.scenery_score, -si.read_number,-si.publish_time'
       },
       props: { // 级联选择器属性
         value: 'basicCitysId',
@@ -114,8 +128,32 @@ export default {
         this.listQuery.sort = '-si.publish_time'
       } else if (key === 'score') {
         this.listQuery.sort = '-si.scenery_score'
+      } else if (key === 'read') {
+        this.listQuery.sort = '-si.read_number'
+      } else if (key === 'like') {
+        this.listQuery.sort = '-si.like_number'
       }
       this.getScenerys()
+    },
+    nextPage() {
+      this.listQuery.page++
+      const loading = this.$loading({
+        target: this.$refs.showArea,
+        text: '正在拼命加载中...'
+      })
+      fetchList(this.listQuery).then(res => {
+        if (res.code === 20000) {
+          const addList = res.data.list
+          const temp = this.scenerys
+          this.scenerys = temp.concat(addList)
+        } else {
+          this.$message({
+            typs: 'info',
+            message: '没有找到符合条件的内容，看看推荐吧！'
+          })
+        }
+        loading.close()
+      })
     },
     getScenerys() {
       const loading = this.$loading({
@@ -125,6 +163,7 @@ export default {
       fetchList(this.listQuery).then(res => {
         if (res.code === 20000) {
           this.scenerys = res.data.list
+          this.listQuery.total = res.data.total
         } else {
           this.$message({
             typs: 'info',
@@ -164,14 +203,14 @@ export default {
     resetQuery() {
       this.listQuery = {
         page: 1,
-        limit: 10,
+        limit: 6,
         simple: false,
         deleted: false,
         privinceId: undefined,
         cityId: undefined,
         constantId: undefined,
         text: undefined,
-        sort: '-si.scenery_score,-si.publish_time'
+        sort: '-si.scenery_score, -si.read_number,-si.publish_time'
       }
     }
   }

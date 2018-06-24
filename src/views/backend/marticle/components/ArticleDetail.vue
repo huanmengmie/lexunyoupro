@@ -5,9 +5,10 @@
         <template v-if="fetchSuccess">
           <div style="background: #d0d0d0;height:40px;">
           <div style="float:right;" class="clear">
-            <router-link style="margin-right:15px;" v-show='isEdit' :to="{ path:'/marticle/add'}">
+            <router-link style="margin-right:15px;" v-if='isEdit' :to="{ path:'/marticle/add'}">
               <el-button type="info" icon="el-icon-edit">发布新文章</el-button>
             </router-link>
+            <el-button type="info" icon="el-icon-edit" v-else @click="resetForm">发布新文章</el-button>
             <el-button v-loading="loading" style="margin-left: 10px;" v-if="isEdit" type="success" @click="updateForm(false)">更新
             </el-button>
             <el-button v-loading="loading" style="margin-left: 10px;" v-else type="success" @click="submitForm(false)">发布
@@ -63,6 +64,27 @@
                     </el-date-picker>
                   </el-form-item>
                 </el-col>
+                <el-col :span="8">
+                  <el-form-item label-width="100px" label="省份:" class="postInfo-container-item" prop="provinceId" required>
+                    <el-select v-model="postForm.provinceId" filterable clearable placeholder="请选择" @change="setCity">
+                      <el-option v-for="item in provinceArray" :key="item.basicCitysId" :label="item.basicCitysName" :value="item.basicCitysId"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+
+                 <el-col :span="8">
+                  <el-form-item label-width="100px" label="城市:" class="postInfo-container-item" prop="cityId" required>
+                    <el-select v-model="postForm.cityId" filterable clearable placeholder="请选择">
+                      <el-option v-for="item in cityArray" :key="item.basicCitysId" :label="item.basicCitysName" :value="item.basicCitysId"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+
+                <el-col :span="8">
+                  <el-form-item label-width="100px" label="详细地址:" class="postInfo-container-item" prop="address" required>
+                    <el-input placeholder="请输入具体地址" v-model="postForm.address"></el-input>
+                  </el-form-item>
+                </el-col>
               </el-row>
             </div>
           </el-col>
@@ -100,6 +122,7 @@ import { fetchArticle, createArticle, updateArticle } from '@/api/article'
 import { fetchConstant } from '@/api/constant'
 import { fetchList } from '@/api/scenery'
 import { parseTime } from '@/utils'
+import { getCitys } from '@/api/city'
 
 const defaultForm = {
   id: undefined,
@@ -109,6 +132,9 @@ const defaultForm = {
   content: '', // 文章内容
   sceneryId: '',
   constantId: '',
+  provinceId: '',
+  cityId: '',
+  address: '',
   authorId: '',
   userName: '',
   publishTime: new Date() // 前台展示时间
@@ -156,6 +182,8 @@ export default {
         userName: this.$store.state.user.name
       }),
       tagArray: [],
+      provinceArray: [],
+      cityArray: [],
       relatedScenery: [],
       fetchSuccess: true,
       loading: false,
@@ -176,6 +204,7 @@ export default {
   mounted() {
     this.getTags()
     this.getScenerys()
+    this.setProvince()
     if (this.isEdit) {
       this.fetchData()
     } else {
@@ -194,6 +223,7 @@ export default {
       fetchArticle(this.$route.params.id).then(response => {
         this.postForm = response.data
         this.postForm.userName = response.data.customer.userName
+        this.setCity()
       }).catch(err => {
         this.fetchSuccess = false
         console.log(err)
@@ -219,6 +249,16 @@ export default {
         this.relatedScenery = res.data.list
       })
     },
+    setProvince() {
+      getCitys(undefined, 1).then(res => {
+        this.provinceArray = res.data.list
+      })
+    },
+    setCity() {
+      getCitys(this.postForm.provinceId, undefined).then(res => {
+        this.cityArray = res.data.list
+      })
+    },
     submitForm(isDraft) {
       this.postForm.publishTime = parseTime(this.postForm.publishTime)
       this.postForm.deleted = isDraft
@@ -233,6 +273,7 @@ export default {
               duration: 2000
             })
           })
+          this.isEdit = true
           this.loading = false
         } else {
           console.log('error submit!!')

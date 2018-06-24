@@ -18,7 +18,7 @@
     <el-tabs type="card">
       <el-tab-pane label="用户-角色">
         <el-table :key='1' :data="utrList" v-loading="utrListLoading" element-loading-text="给我一点时间" border fit highlight-current-row
-          style="width: 100%" empty-text="无">
+          style="width: 100%" empty-text="无" :default-sort = "{prop: 'date', order: 'descending'}">
           <el-table-column align="center" :label="'序号'" width="65" type="index">
           </el-table-column>
           <el-table-column width="150px" :label="'用户名'">
@@ -41,7 +41,7 @@
               <span>{{scope.row.role && scope.row.role.detail}}</span>
             </template>
           </el-table-column>
-          <el-table-column width="200px" align="center" :label="'添加时间'">
+          <el-table-column width="200px" align="center" :label="'添加时间'" sortable prop="date">
             <template slot-scope="scope">
               <span>{{scope.row.createTime}}</span>
             </template>

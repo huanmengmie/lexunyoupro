@@ -155,7 +155,7 @@ export default {
     },
     setScenery() {
       const queryVo = Object.assign({}, baseQuery, {
-        sort: '-si.scenery_score,-si.publish_time'
+        sort: '-si.scenery_score, -si.read_number, -si.publish_time'
       })
       fetchScenerys(queryVo).then(res => {
         this.scenerys = res.data.list
@@ -173,7 +173,7 @@ export default {
       const queryVo = Object.assign({}, baseQuery, {
         limit: 12,
         replyId: 0,
-        sort: '-sc.scenery_score,-sc.publish_time'
+        sort: '-sc.scenery_score, -si.read_number, -sc.publish_time'
       })
       fetchScomments(queryVo).then(res => {
         this.comment = res.data.list

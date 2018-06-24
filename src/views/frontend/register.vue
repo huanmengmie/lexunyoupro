@@ -3,20 +3,21 @@
         <el-col :offset="3" :span="18">
             <el-steps :active="activeIndex" simple style="margin-top:3rem;">
               <el-step title="1、验证手机号" icon="el-icon-phone-outline"></el-step>
-              <el-step title="2、完善用户信息" icon="el-icon-edit"></el-step>
+              <el-step title="2、用户基本信息" icon="el-icon-edit"></el-step>
               <el-step title="3、注册成功" icon="el-icon-success"></el-step>
             </el-steps>
             <div v-if="activeIndex == 1" class="contents">
-                <el-form :model="checkPhone" status-icon :rules="rules1" ref="phoneForm" label-width="100px">
-                    <el-form-item label="手机号" prop="phone" required>
-                        <el-input type="text" v-model.number="checkPhone.phone" auto-complete="off" ref="phone"></el-input>
-                    </el-form-item>
-                    <el-form-item label="验证" prop="checkProcess" required>
-                        <el-slider v-model="checkPhone.checkProcess" :show-tooltip="false" @change="checkSuccess"></el-slider>
-                    </el-form-item>
-                    <el-form-item label="验证码" prop="inputCode" v-show="checkPhone.checkProcess === 100 && legalPhone">
-                        <el-input type="text" v-model.number="checkPhone.inputCode" minlength="6" maxlength="6" auto-complete="off" @change="verifyCode" placeholder="请输入6位验证码"></el-input>
-                    </el-form-item>
+                <el-form :model="checkPhone" status-icon :rules="rules1" ref="checkPhone" label-width="100px">
+                  <el-alert title="" center v-show="countDown > 0" style="margin-bottom:10px;">验证码错误，请{{ countDown }}s后重试</el-alert>
+                  <el-form-item label="手机号" prop="phone" required>
+                      <el-input type="text" v-model.number="checkPhone.phone" @blur.once="ifErrorCode" auto-complete="off" ref="phone"></el-input>
+                  </el-form-item>
+                  <el-form-item label="验证" prop="checkProcess" ref="checkProcess" required>
+                      <el-slider v-model="checkPhone.checkProcess" :show-tooltip="false" :disabled="forbidSlider" @change="checkSuccess"></el-slider>
+                  </el-form-item>
+                  <el-form-item label="验证码" prop="inputCode" ref="inputCode" v-show="checkPhone.checkProcess === 100 && legalPhone">
+                      <el-input type="text" v-model.number="checkPhone.inputCode" minlength="6" maxlength="6" auto-complete="off" @change="verifyCode" placeholder="请输入6位验证码"></el-input>
+                  </el-form-item>
                 </el-form>
                 <el-button type="info" @click="goNext" :disabled="toSecondDisabled">下一步</el-button>
             </div>
@@ -47,6 +48,7 @@
 <script>
 import { validatePhone } from '@/utils/validate'
 import { register, ifExist } from '@/api/customer'
+import { setCookie, getCookie } from '@/utils/auth'
 
 export default {
   data() {
@@ -89,6 +91,8 @@ export default {
     return {
       activeIndex: 1,
       legalPhone: false,
+      forbidSlider: false,
+      countDown: 0,
       checkPhone: {
         phone: '',
         checkProcess: 0,
@@ -135,7 +139,7 @@ export default {
           if (res.code === 22222 && res.data === false) {
             this.$message('验证码已发送至您的手机请注意查收')
           } else {
-            this.$message('该手机号已被注册')
+            this.$message('该手机号已注册，直接登录或换个手机号')
             this.legalPhone = false
             this.$refs.phone.focus()
           }
@@ -143,10 +147,45 @@ export default {
       }
     },
     verifyCode() {
-      var reg = /^\d{6}$/
-      if (reg.test(this.checkPhone.inputCode)) {
+      if (this.checkPhone.inputCode === 123456) {
         this.toSecondDisabled = false
+      } else if (!this.ifErrorCode()) {
+        this.countDown = 60
+        setCookie(this.checkPhone.phone, new Date())
+        this.timeOut()
       }
+    },
+    ifErrorCode() {
+      const end = getCookie(this.checkPhone.phone.toString())
+      if (end !== undefined) {
+        const diff = (new Date(end) - new Date() + 60000) / 1000
+        console.log(diff)
+        if (diff > 0) {
+          this.countDown = parseInt(diff)
+          this.timeOut()
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    },
+    timeOut() {
+      this.$refs.checkProcess.resetField()
+      this.$refs.inputCode.resetField()
+      this.forbidSlider = true
+      const _self = this
+      var test = setInterval(() => {
+        if (_self.countDown > 0) {
+          _self.countDown--
+        } else {
+          _self.forbidSlider = false
+        }
+      }, 1000)
+      setTimeout(() => {
+        clearInterval(test)
+      }, 120000)
     },
     goNext() {
       this.activeIndex = 2

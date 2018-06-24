@@ -68,7 +68,7 @@ export function formatTime(time, option) {
   }
 }
 
-export function textSubString(text, length) {
+export function textSubString(text = '', length) {
   if (text.length > length) {
     return text.substring(0, length) + '...'
   } else {

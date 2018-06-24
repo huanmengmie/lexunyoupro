@@ -43,7 +43,7 @@ import { fetchList as fetchArticles } from '@/api/article'
 import { formatTime } from '@/utils'
 
 const baseQuery = {
-  limit: '7',
+  limit: '4',
   page: '1',
   deleted: false,
   simple: false

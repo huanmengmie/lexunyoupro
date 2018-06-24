@@ -25,17 +25,17 @@
     </div>
 
     <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row
-      style="width: 100%" empty-text="您暂未发布随笔">
+      style="width: 100%" empty-text="您暂未发布随笔" :default-sort = "{prop: 'date', order: 'descending'}">
       <el-table-column align="center" :label="'序号'" width="65" type="index">
       </el-table-column>
       <el-table-column width="150px" :label="'标题'">
         <template slot-scope="scope">
           <el-popover
             placement="bottom-start"
-            width="150"
+            width="350"
             trigger="hover">
-            <img :src="scope.row.avatar">
-            <span class="link-type" @click="handleUpdate(scope.row)" slot="reference">{{scope.row.title}}</span>
+            <img :src="scope.row.avatar" style="width:100%;">
+            <span class="link-type" @click="handleUpdate(scope.row.id)" slot="reference">{{scope.row.title}}</span>
           </el-popover>
         </template>
       </el-table-column>
@@ -52,20 +52,35 @@
       </el-table-column>
       <el-table-column width="110px" align="center" :label="'作者'">
         <template slot-scope="scope">
-          <span>{{scope.row.customer.userName}}</span>
+          <span>{{scope.row.customer && scope.row.customer.userName}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="80px" align="center" :label="'网友评分'">
+        <template slot-scope="scope">
+          <span>{{scope.row.score}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="80px" align="center" :label="'浏览量'">
+        <template slot-scope="scope">
+          <span>{{scope.row.readNumber}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="80px" align="center" :label="'喜欢数'">
+        <template slot-scope="scope">
+          <span>{{scope.row.likeNumber}}</span>
         </template>
       </el-table-column>
       <el-table-column width="110px" align="center" :label="'相关标签'">
         <template slot-scope="scope">
-          <el-tag>{{scope.row.constant.value }}</el-tag>
+          <el-tag>{{scope.row.constant && scope.row.constant.value }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column width="160px" align="center" :label="'发布日期'">
+      <el-table-column width="160px" align="center" :label="'发布日期'" sortable prop="date">
         <template slot-scope="scope">
           <span>{{scope.row.publishTime}}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" :label="'已发布'" width="100">
+      <el-table-column class-name="status-col" align="center" :label="'已发布'" width="100">
         <template slot-scope="scope">
           <el-tag :type="scope.row.deleted | statusFilter">{{!scope.row.deleted}}</el-tag>
         </template>

@@ -2,20 +2,19 @@
 <header class="main-header" :class="{'main-header-fixed':headerFixed}">
     <el-row>
         <el-col :span="4" :offset="3">
-            <router-link :to="{path:'/'}" tag="h1" style="font-size: 2rem; padding-top: 0.5rem;color: white;">乐寻游</router-link>
+            <router-link :to="{path:'/'}" tag="h1" style="font-size: 2rem; padding-top: 0.5rem;color: white;cursor:pointer;">乐寻游</router-link>
         </el-col>
         <el-col :span="10" :offset="6">
             <el-menu
             :default-active="activeIndex"
             class="el-menu-demo"
             mode="horizontal"
-            @select="handleSelect"
             text-color="#C3EAFA"
             background-color="#6AB6EF"
             active-text-color="#fff"
             :router="useRouter"
             style="border-bottom:0">
-              <el-menu-item index="/">首页</el-menu-item>
+              <el-menu-item index="/index">首页</el-menu-item>
               <el-menu-item index="/scenery">热门景点</el-menu-item>
               <el-menu-item index="/article">交流心得</el-menu-item>
               <el-menu-item index="/console/dashboard">控制台</el-menu-item>
@@ -51,7 +50,7 @@
           <el-input v-model.number="form.phone" auto-complete="off" clearable></el-input>
         </el-form-item>
         <el-form-item label="密码" :label-width="formLabelWidth" prop="password" required>
-          <el-input v-model="form.password" type="password" auto-complete="off" clearable></el-input>
+          <el-input v-model="form.password" type="password" auto-complete="off" clearable @keyup.native.enter="submitForm"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -78,7 +77,7 @@ export default {
     }
     return {
       headerFixed: false,
-      activeIndex: '/',
+      activeIndex: '',
       useRouter: true,
       isLogin: false,
       dialogFormVisible: false,
@@ -100,9 +99,18 @@ export default {
   },
   mounted() {
     window.addEventListener('scroll', this.handleScroll)
-    this.activeIndex = window.localStorage.getItem('index') || '/'
+    this.setActiveIndex()
+  },
+  watch: {
+    '$route': 'setActiveIndex'
   },
   methods: {
+    setActiveIndex() {
+      let path = this.$route.path
+      const reg = /\/\w+/g
+      path = reg.exec(path)[0]
+      this.activeIndex = path || '/index'
+    },
     handleScroll() {
       var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
       var offsetTop = document.querySelector('.main-header').offsetTop
@@ -111,10 +119,6 @@ export default {
       } else {
         this.headerFixed = false
       }
-    },
-    handleSelect(key, keyPath) {
-      window.localStorage.setItem('index', keyPath)
-      console.log(key, keyPath)
     },
     openDialog(title) {
       this.form.title = title

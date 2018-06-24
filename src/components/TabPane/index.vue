@@ -1,26 +1,26 @@
 <template>
 <div>
-   <el-button type="primary" @click="handleCreate">添加新标签</el-button>
-  <el-table :data="list" border fit highlight-current-row style="width: 100%">
+   <el-button type="primary" @click="handleCreate" style="float:right;">添加新标签</el-button>
+  <el-table :data="list" border fit highlight-current-row style="width: 100%" :default-sort = "{prop: 'publishTime', order: 'descending'}">
 
     <el-table-column align="center" label="ID" width="65"  v-loading="loading" type="index"
     element-loading-text="请给我点时间！">
 
     </el-table-column>
 
-    <el-table-column width="110px" align="center" label="key">
+    <el-table-column width="110px" align="center" label="key" prop="key">
       <template slot-scope="scope">
         <span>{{scope.row.key}}</span>
       </template>
     </el-table-column>
 
-    <el-table-column min-width="180px" label="value">
+    <el-table-column min-width="180px" label="value" prop="value">
       <template slot-scope="scope">
         <span>{{scope.row.value}}</span>
       </template>
     </el-table-column>
 
-   <el-table-column width="280px" align="center" label="Date">
+   <el-table-column width="280px" align="center" label="Date" sortable prop="publishTime">
       <template slot-scope="scope">
         <span>{{scope.row.publishTime}}</span>
       </template>
@@ -64,7 +64,7 @@
           <el-input v-model="temp.key"></el-input>
         </el-form-item>
         <el-form-item :label="'value值'" prop="value">
-          <el-input v-model="temp.value"></el-input>
+          <el-input v-model="temp.value" @keyup.native.enter="createData"></el-input>
         </el-form-item>
         <el-form-item :label="'启用'" prop="deleted">
             <el-switch

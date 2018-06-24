@@ -13,6 +13,12 @@
       type="datetime"
       placeholder="选择结束时间">
     </el-date-picker>
+    <el-select v-model="listQuery.provinceId" filterable clearable placeholder="省份" @click.native.once="setProvince" @change="setCity">
+        <el-option v-for="item in provinceArray" :key="item.basicCitysId" :label="item.basicCitysName" :value="item.basicCitysId"></el-option>
+      </el-select>
+      <el-select v-model="listQuery.cityId" filterable clearable placeholder="城市">
+        <el-option v-for="item in cityArray" :key="item.basicCitysId" :label="item.basicCitysName" :value="item.basicCitysId"></el-option>
+      </el-select>
       <el-select clearable class="filter-item" filterable style="width: 130px" v-model="listQuery.constantId" :placeholder="'相关标签'">
         <el-option v-for="item in tagArray" :key="item.id" :label="item.value" :value="item.id">
         </el-option>
@@ -25,17 +31,17 @@
     </div>
 
     <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row
-      style="width: 100%" empty-text="无">
+      style="width: 100%" empty-text="无" :default-sort = "{prop: 'date', order: 'descending'}">
       <el-table-column align="center" :label="'序号'" width="65" type="index">
       </el-table-column>
       <el-table-column width="150px" :label="'标题'">
         <template slot-scope="scope">
           <el-popover
             placement="bottom-start"
-            width="150"
+            width="350"
             trigger="hover">
-            <img :src="scope.row.avatar">
-            <span class="link-type" @click="handleUpdate(scope.row)" slot="reference">{{scope.row.title}}</span>
+            <img :src="scope.row.avatar" style="width:100%;">
+            <span class="link-type" @click="handleUpdate(scope.row.id)" slot="reference">{{scope.row.title}}</span>
           </el-popover>
         </template>
       </el-table-column>
@@ -52,20 +58,35 @@
       </el-table-column>
       <el-table-column width="110px" align="center" :label="'作者'">
         <template slot-scope="scope">
-          <span>{{scope.row.customer.userName}}</span>
+          <span>{{scope.row.customer && scope.row.customer.userName}}</span>
         </template>
       </el-table-column>
       <el-table-column width="110px" align="center" :label="'相关标签'">
         <template slot-scope="scope">
-          <el-tag>{{scope.row.constant.value }}</el-tag>
+          <el-tag>{{scope.row.constant && scope.row.constant.value }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column width="160px" align="center" :label="'发布日期'">
+      <el-table-column width="160px" align="center" :label="'发布日期'" sortable prop="date">
         <template slot-scope="scope">
           <span>{{scope.row.publishTime}}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" :label="'已发布'" width="100">
+      <el-table-column width="80px" align="center" :label="'网友评分'">
+        <template slot-scope="scope">
+          <span>{{scope.row.score}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="80px" align="center" :label="'浏览量'">
+        <template slot-scope="scope">
+          <span>{{scope.row.readNumber}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="80px" align="center" :label="'喜欢数'">
+        <template slot-scope="scope">
+          <span>{{scope.row.likeNumber}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column class-name="status-col" align="center" :label="'已发布'" width="100">
         <template slot-scope="scope">
           <el-tag :type="scope.row.deleted | statusFilter">{{!scope.row.deleted}}</el-tag>
         </template>
@@ -92,8 +113,7 @@
 import { fetchList, updateArticle } from '@/api/article'
 import { fetchConstant } from '@/api/constant'
 import { parseTime, textSubString } from '@/utils'
-
-// arr to obj ,such as { CN : "China", US : "USA" }
+import { getCitys } from '@/api/city'
 
 export default {
   name: 'complexTable',
@@ -102,11 +122,15 @@ export default {
       tableKey: 0,
       list: null,
       total: null,
+      provinceArray: [],
+      cityArray: [],
       listLoading: true,
       listQuery: {
         page: 1,
         limit: 20,
         sort: '+id',
+        provinceId: '',
+        cityId: '',
         simple: false,
         text: undefined,
         constantId: undefined,
@@ -136,7 +160,7 @@ export default {
       return this.tagArray[type]
     }
   },
-  created() {
+  mounted() {
     this.getList()
     this.getTags()
   },
@@ -150,8 +174,17 @@ export default {
         this.listQuery.endTime = parseTime(this.listQuery.endTime)
       }
       fetchList(this.listQuery).then(response => {
-        this.list = response.data.list
-        this.total = response.data.total
+        if (response.code === 20000) {
+          this.list = response.data.list
+          this.total = response.data.total
+        } else {
+          this.$message({
+            type: 'info',
+            message: '没有符合条件的记录'
+          })
+          this.list = null
+        }
+      }).finally(() => {
         this.listLoading = false
       })
     },
@@ -163,6 +196,16 @@ export default {
       }
       fetchConstant(conditions).then(res => {
         this.tagArray = res.data.list
+      })
+    },
+    setProvince() {
+      getCitys(undefined, 1).then(res => {
+        this.provinceArray = res.data.list
+      })
+    },
+    setCity() {
+      getCitys(this.listQuery.provinceId, undefined).then(res => {
+        this.cityArray = res.data.list
       })
     },
     handleFilter() {
